@@ -131,6 +131,7 @@ protected:
             STRATEGY_SONIFICATION,
             STRATEGY_DTMF,
             STRATEGY_ENFORCED_AUDIBLE,
+            STRATEGY_MEDIA_SONIFICATION,
             NUM_STRATEGIES
         };
 
