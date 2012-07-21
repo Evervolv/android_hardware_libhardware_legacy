@@ -115,7 +115,7 @@ static int rmmod(const char *modname)
     }
 
     if (ret != 0)
-        LOGD("wimax: rmmod: unable to unload driver module \"%s\": %s\n", modname, strerror(errno));
+        ALOGD("wimax: rmmod: unable to unload driver module \"%s\": %s\n", modname, strerror(errno));
     return ret;
 }
 
@@ -137,7 +137,7 @@ static int check_driver_loaded()
      * crash.
      */
     if ((proc = fopen(MODULE_FILE, "r")) == NULL) {
-        LOGW("wimax: check_driver_loaded: could not open %s: %s", MODULE_FILE, strerror(errno));
+        ALOGW("wimax: check_driver_loaded: could not open %s: %s", MODULE_FILE, strerror(errno));
         property_set(DRIVER_PROP_NAME, "");
         return 0;
     }
@@ -155,12 +155,12 @@ static int check_driver_loaded()
 // unload wimax module and sequansd
 int unloadWimaxDriver()
 {
-    LOGI("unloadWimaxDriver: Unloading wimax driver...");
+    ALOGI("unloadWimaxDriver: Unloading wimax driver...");
     char pid[PROPERTY_VALUE_MAX];
     int count = 20; /* wait at most 10 seconds for completion */
     property_set("ctl.stop", SERVICE_NAME);
     if (property_get(DRIVER_PROP_NAME, pid, NULL)) {
-	LOGI("unloadWimaxDriver: Killing sequansd...");
+	ALOGI("unloadWimaxDriver: Killing sequansd...");
         kill(atoi(pid), SIGQUIT);
     }
     sched_yield();
@@ -185,28 +185,28 @@ int loadWimaxDriver()
     char driver_status[PROPERTY_VALUE_MAX];
     int count = 50; /* wait at most 10 seconds for completion */
 
-	LOGI("loadWimaxDriver: Checking driver...");
+	ALOGI("loadWimaxDriver: Checking driver...");
     if (check_driver_loaded()) {
-	    LOGI("loadWimaxDriver: Driver already loaded!");
+	    ALOGI("loadWimaxDriver: Driver already loaded!");
         return 0;
     }
 
-	LOGI("loadWimaxDriver() - insmod(driver_mod)");
+	ALOGI("loadWimaxDriver() - insmod(driver_mod)");
     if (insmod(DRIVER_MODULE_PATH, DRIVER_MODULE_ARG) < 0)
-	    LOGI("loadWimaxDriver: insmod succeeded!");
+	    ALOGI("loadWimaxDriver: insmod succeeded!");
 
         sched_yield();
         while (count-- > 0) {
             if (property_get(DRIVER_PROP_NAME, driver_status, NULL)) {
                 if (strcmp(driver_status, "") != 0) {
                     usleep(100000);
-                    LOGI("loadWimaxDriver: sleeping to let sequansd die...");
+                    ALOGI("loadWimaxDriver: sleeping to let sequansd die...");
             }
         }
     }
 
     count = 50;
-	LOGI("loadWimaxDriver: starting sequansd...");
+	ALOGI("loadWimaxDriver: starting sequansd...");
         property_set("ctl.start", SERVICE_NAME);
 
     while (count-- > 0) {
@@ -235,30 +235,30 @@ int startWimaxDaemon()
     //Check whether already running
     if (property_get(DRIVER_PROP_NAME, wimax_status, NULL)
            && strcmp(wimax_status, "running") == 0) {
-        LOGI("startWimaxDaemon: daemon already running");
+        ALOGI("startWimaxDaemon: daemon already running");
         return 0;
 
         if (strcmp(SERVICE_NAME,"") == 0) {
-            LOGI("startWimaxDaemon: sleeping...");
+            ALOGI("startWimaxDaemon: sleeping...");
             usleep(100000);
         } else {
-            LOGI("startWimaxDaemon: starting wimax daemon!");
+            ALOGI("startWimaxDaemon: starting wimax daemon!");
             property_set("ctl.start", SERVICE_NAME);
         }
     }
 
     while (count-- > 0) {
         if (property_get(DRIVER_PROP_NAME, wimax_status, NULL)) {
-            LOGI("startWimaxDaemon: DRIVER_PROP_NAME not null");
+            ALOGI("startWimaxDaemon: DRIVER_PROP_NAME not null");
             if (strcmp(wimax_status, "") != 0) {
-                LOGI("startWimaxDaemon: daemon started!");
+                ALOGI("startWimaxDaemon: daemon started!");
                 return 0;
             }
         }
         usleep(100000);
     }
     property_set(DRIVER_PROP_NAME, "");
-    LOGI("startWimaxDaemon: fail condition...");
+    ALOGI("startWimaxDaemon: fail condition...");
     unloadWimaxDriver();
     return -1;
 }
@@ -270,21 +270,21 @@ int stopWimaxDaemon()
     int count = 300; /* wait at most 30 seconds for completion */
 
     /* Check whether supplicant already stopped */
-    LOGI("stopWimaxDaemon: checking driver loaded");
+    ALOGI("stopWimaxDaemon: checking driver loaded");
     if (property_get(DRIVER_PROP_NAME, wimax_status, NULL)
             && strcmp(wimax_status, "stopped") == 0) {
-        LOGI("stopWimaxDaemon: wimax driver already stopped!");
+        ALOGI("stopWimaxDaemon: wimax driver already stopped!");
         return 0;
     }
 
-    LOGI("stopWimaxDaemon: stopping wimax daemon...");
+    ALOGI("stopWimaxDaemon: stopping wimax daemon...");
     property_set("ctl.stop", SERVICE_NAME);
     sched_yield();
 
     while (count-- > 0) {
         if (property_get(DRIVER_PROP_NAME, wimax_status, NULL)) {
             if (strcmp(wimax_status, "stopped") == 0)
-                LOGI("stopWimaxDaemon: wimax daemon stopped!");
+                ALOGI("stopWimaxDaemon: wimax daemon stopped!");
                 return 0;
         }
         usleep(100000);
@@ -401,20 +401,20 @@ int getWimaxProp(const char *prop, char *result_buffer)
     // get infoz
     gai_err = getaddrinfo("127.0.0.1", "7774", &hints, &res);
     if (gai_err) {
-        LOGE("getWimaxProp: ERROR getaddrinfo: %s\n", gai_strerror(gai_err));
+        ALOGE("getWimaxProp: ERROR getaddrinfo: %s\n", gai_strerror(gai_err));
         return -1;
     }
 
     // get socket
     s = sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (s < 0) {
-        LOGE("getWimaxProp: ERROR socket");
+        ALOGE("getWimaxProp: ERROR socket");
         return -1;
     }
 
     // connect
     if (connect(s, res->ai_addr, res->ai_addrlen) < 0) {
-        LOGE("getWimaxProp: ERROR connect");
+        ALOGE("getWimaxProp: ERROR connect");
         return -1;
     }
 
@@ -441,21 +441,21 @@ int getWimaxProp(const char *prop, char *result_buffer)
                   ret = 0;
               } else {
                   strcpy(result_buffer, "##NULL_STRING##");
-                  LOGE("getWimaxProp: reading buffer = NULL, return pPropData = \"##NULL_STRING##\"");
+                  ALOGE("getWimaxProp: reading buffer = NULL, return pPropData = \"##NULL_STRING##\"");
                   close(sockfd);
                   ret = 1;
               }
           } else {
-              LOGE("getWimaxProp: ERROR reading pPropData from socket");
+              ALOGE("getWimaxProp: ERROR reading pPropData from socket");
               close(sockfd);
               ret = -1;
           }
       } else {
-          LOGE("getWimaxProp: ERROR writing to socket");
+          ALOGE("getWimaxProp: ERROR writing to socket");
           close(sockfd);
           ret = -1;
       }
-    LOGI("getWimaxProp(prop = %s): service response: %s, converted: %s", prop, buffer, result_buffer);
+    ALOGI("getWimaxProp(prop = %s): service response: %s, converted: %s", prop, buffer, result_buffer);
     return ret;
 }
 
@@ -480,20 +480,20 @@ int setWimaxProp(char* prop, char* val)
     // get infoz
     gai_err = getaddrinfo("127.0.0.1", "7773", &hints, &res);
     if (gai_err) {
-        LOGE("setWimaxProp: ERROR getaddrinfo: %s\n", gai_strerror(gai_err));
+        ALOGE("setWimaxProp: ERROR getaddrinfo: %s\n", gai_strerror(gai_err));
         return -1;
     }
 
     // get socket
     s = sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (s < 0) {
-        LOGE("setWimaxProp: ERROR socket");
+        ALOGE("setWimaxProp: ERROR socket");
         return -1;
     }
 
     // connect
     if (connect(s, res->ai_addr, res->ai_addrlen) < 0) {
-        LOGE("setWimaxProp: ERROR connect");
+        ALOGE("setWimaxProp: ERROR connect");
         return -1;
     }
 
@@ -509,13 +509,13 @@ int setWimaxProp(char* prop, char* val)
               // encrypt response
               encryptString(buffer);
               close(sockfd);
-              LOGI("setWimaxProp: done");
+              ALOGI("setWimaxProp: done");
           }else{
-              LOGE("setWimaxProp: ERROR read from socket");
+              ALOGE("setWimaxProp: ERROR read from socket");
               close(sockfd);
           }
      }else{
-        LOGE("setWimaxProp: ERROR writing to socket");
+        ALOGE("setWimaxProp: ERROR writing to socket");
         close(sockfd);
      }
 
@@ -530,16 +530,16 @@ int setWimaxProp(char* prop, char* val)
           // read response
           if (read(sockfd, buffer, 1023) >= 0 ) {
               close(sockfd);
-              LOGI("setWimaxProp: done");
+              ALOGI("setWimaxProp: done");
           }else{
-              LOGE("setWimaxProp: ERROR read from socket"); 
+              ALOGE("setWimaxProp: ERROR read from socket"); 
               close(sockfd);
           }
      }else{
-        LOGE("setWimaxProp: ERROR writing to socket");
+        ALOGE("setWimaxProp: ERROR writing to socket");
         close(sockfd);
      }
-    LOGI("setWimaxProp(prop = %s): response = %s",prop, buffer);
+    ALOGI("setWimaxProp(prop = %s): response = %s",prop, buffer);
     return 0;
 }
 
@@ -561,7 +561,7 @@ int doWimaxDhcpRelease()
     do {
       property_get("dhcp.wimax0.reason", dhcp_status, NULL);
       if (!strcmp(dhcp_status, "RELEASE")) {
-          LOGI("dhcpRelease: dhcp release success");
+          ALOGI("dhcpRelease: dhcp release success");
           result = 0;
           goto done;
       }
@@ -569,7 +569,7 @@ int doWimaxDhcpRelease()
       usleep(100000);
     }
     while (i != 50);
-    LOGE("dhcpRelease: release fail");
+    ALOGE("dhcpRelease: release fail");
     result = -1;
 done:
     return result;
@@ -581,7 +581,7 @@ int stopDhcpWimaxDaemon()
     int count = 300; /* wait at most 30 seconds for completion */
     char dhcp_status[PROPERTY_VALUE_MAX] = {'\0'};
 
-    LOGD("stopDhcpWimaxDaemon: Stopping DHCP...");
+    ALOGD("stopDhcpWimaxDaemon: Stopping DHCP...");
     /* Check whether dhcpcd already stopped */
     if (property_get(DHCP_WIMAX_PROP_NAME, dhcp_status, NULL)
         && strcmp(dhcp_status, "stopped") == 0) {
@@ -606,21 +606,21 @@ int startDhcpWimaxDaemon()
     char dhcp_status[PROPERTY_VALUE_MAX] = {'\0'};
     int count = 100; /* wait at most 10 seconds for completion */
 
-    LOGI("startDhcpWimaxDaemon: stopping dhcpWimax");
+    ALOGI("startDhcpWimaxDaemon: stopping dhcpWimax");
     stopDhcpWimaxDaemon();
 
     ifc_init();
     ifc_up("wimax0");
-    LOGI("startDhcpWimaxDaemon: wimax0 up!");
+    ALOGI("startDhcpWimaxDaemon: wimax0 up!");
 
     property_set("ctl.start", WIMAX_DHCP_NAME);
     sched_yield();
-    LOGI("startDhcpWimaxDaemon: dhcp starting...");
+    ALOGI("startDhcpWimaxDaemon: dhcp starting...");
 
     while (count-- > 0) {
         if (property_get("dhcp.wimax0.reason", dhcp_status, NULL)) {
             if (strcmp(dhcp_status, "BOUND") == 0 || strcmp(dhcp_status, "RENEW") == 0 || strcmp(dhcp_status, "PREINIT") == 0) {
-                LOGI("startDhcpWimaxDaemon: dhcp finished!");
+                ALOGI("startDhcpWimaxDaemon: dhcp finished!");
                 return 0;
             }
         }
@@ -634,12 +634,12 @@ int startDhcpWimaxDaemon()
 int terminateProcess(char *pid)
 {
     if(!kill(atoi(pid), SIGTERM)) {
-       LOGD("terminateProcess: process terminated successfully.");
+       ALOGD("terminateProcess: process terminated successfully.");
 //TODO needed?
 //     stopDhcpWimaxDaemon();
        return 0;
     } else {
-    LOGE("terminateProcess: process could not be killed!");
+    ALOGE("terminateProcess: process could not be killed!");
   }
   return -1;
 }
@@ -650,7 +650,7 @@ int addRouteToGateway()
 {
     char cmd[1024], gw[92], ip[92];
 
-    LOGD("addRouteToGateway!");
+    ALOGD("addRouteToGateway!");
     memset(ip, 0, 92);
     memset(gw, 0, 92);
     property_get("dhcp.wimax0.ipaddress", ip, NULL);
@@ -687,24 +687,24 @@ int thpIoctl(int cmd, long int arg)
     // get infoz
     gai_err = getaddrinfo("127.0.0.1", "7772", &hints, &res);
     if (gai_err) {
-        LOGE("thpIoctl: ERROR getaddrinfo: %s\n", gai_strerror(gai_err));
+        ALOGE("thpIoctl: ERROR getaddrinfo: %s\n", gai_strerror(gai_err));
         return -1;
     }
 
     // get socket
     s = sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (s < 0) {
-        LOGE("thpIoctl: ERROR socket");
+        ALOGE("thpIoctl: ERROR socket");
         return -1;
     }
 
     // connect
     if (connect(s, res->ai_addr, res->ai_addrlen) < 0) {
-        LOGE("thpIoctl: ERROR connect");
+        ALOGE("thpIoctl: ERROR connect");
         return -1;
     }
 
-    LOGI("thpIoctl: ioctl_cmd_idx=%d, arg=%ld", cmd, arg);
+    ALOGI("thpIoctl: ioctl_cmd_idx=%d, arg=%ld", cmd, arg);
     memset(buffer, 0, 1024);
     sprintf(buffer, "%d", cmd);
     buflen = strlen(buffer);
@@ -722,7 +722,7 @@ int thpIoctl(int cmd, long int arg)
     } else {
         err = "ERROR writing to socket";
     }
-    LOGI("thpIoctl: wimaxIoctl %s", err);
+    ALOGI("thpIoctl: wimaxIoctl %s", err);
     close(sockfd);
     return -1;
 }
@@ -730,16 +730,16 @@ int thpIoctl(int cmd, long int arg)
 // start wmxCfgItf service
 int wimaxConfigInterface()
 {
-  LOGI(" wimaxConfigInterface!");
+  ALOGI(" wimaxConfigInterface!");
   property_set("ctl.start", WIMAX_CFG_IFACE);
 
   return 0;
 }
 
-// dump wimax logcat messages
+// dump wimax ALOGcat messages
 int wimaxDumpLogcat()
 {
-    LOGD("wimaxDumpLogcat!");
+    ALOGD("wimaxDumpLogcat!");
     property_set("ctl.start", WIMAX_LOGCAT);
 
     return 0;
@@ -748,7 +748,7 @@ int wimaxDumpLogcat()
 // dump wimax /proc/kmsg messages
 int wimaxDumpKmsg()
 {
-    LOGI("wimaxDumpKmsg!");
+    ALOGI("wimaxDumpKmsg!");
     property_set("ctl.start", WIMAX_KMSG);
 
     return 0;
@@ -757,7 +757,7 @@ int wimaxDumpKmsg()
 // dump wimax /proc/last_kmsg messages
 int wimaxDumpLastKmsg()
 {
-    LOGI("wimaxDumpLastKmsg!");
+    ALOGI("wimaxDumpLastKmsg!");
     property_set("ctl.start", WIMAX_LAST_KMSG);
 
     return 0;
@@ -788,20 +788,20 @@ char* getDataFromServer(const char *cmd, char* port, int get_int)
     // get infoz
     gai_err = getaddrinfo("127.0.0.1", port, &hints, &res);
     if (gai_err) {
-        LOGE("getDataFromServer: ERROR getaddrinfo: %s\n", gai_strerror(gai_err));
+        ALOGE("getDataFromServer: ERROR getaddrinfo: %s\n", gai_strerror(gai_err));
         goto done;
     }
 
     // get socket
     s = sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (s < 0) {
-        LOGE("getDataFromServer: ERROR socket");
+        ALOGE("getDataFromServer: ERROR socket");
         goto done;
     }
 
     // connect
     if (connect(s, res->ai_addr, res->ai_addrlen) < 0) {
-        LOGE("getDataFromServer: ERROR connect");
+        ALOGE("getDataFromServer: ERROR connect");
         goto done;
     }
 
@@ -826,31 +826,31 @@ char* getDataFromServer(const char *cmd, char* port, int get_int)
               decryptString(buffer);
               shutdown(sockfd, 2);
               close(sockfd);
-              LOGI("getDataFromServer: done");
+              ALOGI("getDataFromServer: done");
           }else{
-              LOGE("getDataFromServer: ERROR read from socket");
+              ALOGE("getDataFromServer: ERROR read from socket");
               close(sockfd);
           }
      }else{
-        LOGE("getDataFromServer: ERROR writing to socket");
+        ALOGE("getDataFromServer: ERROR writing to socket");
         close(sockfd);
      }
 done:
-    LOGI("getDataFromServer(cmd = %s): response = %s",cmd, buffer);
+    ALOGI("getDataFromServer(cmd = %s): response = %s",cmd, buffer);
     return buffer;
 }
 
 //  connect to wimax java API socket server. WimaxMonitor.java
 int getDataFromWimaxStateTracker(const char *cmd)
 {
-    LOGI("getDataFromWimaxStateTracker(%s)",cmd);
+    ALOGI("getDataFromWimaxStateTracker(%s)",cmd);
     return getDataFromServer(cmd, "7775", 1); // flag 1 to return 0 for int
 }
 
 // wimaxDaemon
 char* getDataFromWimaxDaemon(const char *cmd)
 {
-     LOGI("getDataFromWimaxDaemon: cmd=%s", cmd);
+     ALOGI("getDataFromWimaxDaemon: cmd=%s", cmd);
      return getDataFromServer(cmd, "7776", 0); // flag 0 to allow char return
 }
 
@@ -880,7 +880,7 @@ char* getDateAndTime()
   timeinfo = localtime(&rawtime);
   strftime(buffer, sizeof(buffer), "%B%d_%H%M%S", timeinfo);
   result = buffer;
-  LOGI("getDateAndTime: result=%s", result);
+  ALOGI("getDateAndTime: result=%s", result);
 
   return result;
 }
