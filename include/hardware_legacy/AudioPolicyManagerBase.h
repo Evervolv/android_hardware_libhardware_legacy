@@ -501,6 +501,12 @@ protected:
         status_t loadAudioPolicyConfig(const char *path);
         void defaultAudioPolicyConfig(void);
 
+#ifdef QCOM_HARDWARE
+        // updates device caching and output for streams that can influence the
+        //    routing of notifications
+        void handleNotificationRoutingForStream(AudioSystem::stream_type stream);
+#endif
+
 
         AudioPolicyClientInterface *mpClientInterface;  // audio policy client interface
         audio_io_handle_t mPrimaryOutput;              // primary output handle
@@ -561,9 +567,11 @@ protected:
 private:
         static float volIndexToAmpl(audio_devices_t device, const StreamDescriptor& streamDesc,
                 int indexInUi);
+#ifndef QCOM_HARDWARE
         // updates device caching and output for streams that can influence the
         //    routing of notifications
         void handleNotificationRoutingForStream(AudioSystem::stream_type stream);
+#endif
         static bool isVirtualInputDevice(audio_devices_t device);
 };
 
