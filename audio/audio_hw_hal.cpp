@@ -525,11 +525,7 @@ static int adev_open_output_stream(struct audio_hw_device *dev,
     devices = convert_audio_device(devices, HAL_API_REV_2_0, HAL_API_REV_1_0);
 
 #ifndef ICS_AUDIO_BLOB
-#ifdef QCOM_HARDWARE
-    out->legacy_out = ladev->hwif->openOutputStream(devices, flags, (int *) &config->format,
-#else
     out->legacy_out = ladev->hwif->openOutputStream(devices, (int *) &config->format,
-#endif
                                                     &config->channel_mask,
                                                     &config->sample_rate, &status);
 #else
