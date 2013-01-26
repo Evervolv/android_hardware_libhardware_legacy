@@ -3176,7 +3176,7 @@ status_t AudioPolicyManagerBase::AudioInputDescriptor::dump(int fd)
 AudioPolicyManagerBase::StreamDescriptor::StreamDescriptor()
     :   mIndexMin(0), mIndexMax(1), mCanBeMuted(true)
 {
-    mIndexCur.add(AUDIO_DEVICE_OUT_DEFAULT, 0);
+    mIndexCur.add(AUDIO_DEVICE_OUT_DEFAULT, 1);
 }
 
 int AudioPolicyManagerBase::StreamDescriptor::getVolumeIndex(audio_devices_t device)
