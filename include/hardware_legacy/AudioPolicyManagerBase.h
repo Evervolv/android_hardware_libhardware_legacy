@@ -276,6 +276,8 @@ protected:
             bool mStrategyMutedByDevice[NUM_STRATEGIES]; // strategies muted because of incompatible
                                                 // device selection. See checkDeviceMuteStrategies()
             uint32_t mDirectOpenCount; // number of clients using this output (direct outputs only)
+
+            bool mForceRouting; // Next routing for this output will be forced as current device routed is null
         };
 
         // descriptor for audio inputs. Used to maintain current configuration of each opened audio input
@@ -348,7 +350,11 @@ protected:
 
         // change the route of the specified output. Returns the number of ms we have slept to
         // allow new routing to take effect in certain cases.
+#ifdef QCOM_HARDWARE
+        virtual uint32_t setOutputDevice(audio_io_handle_t output,
+#else
         uint32_t setOutputDevice(audio_io_handle_t output,
+#endif
                              audio_devices_t device,
                              bool force = false,
                              int delayMs = 0);
@@ -369,7 +375,11 @@ protected:
         virtual float computeVolume(int stream, int index, audio_io_handle_t output, audio_devices_t device);
 
         // check that volume change is permitted, compute and send new volume to audio hardware
+#ifdef QCOM_HARDWARE
+        virtual status_t checkAndSetVolume(int stream, int index, audio_io_handle_t output, audio_devices_t device, int delayMs = 0, bool force = false);
+#else
         status_t checkAndSetVolume(int stream, int index, audio_io_handle_t output, audio_devices_t device, int delayMs = 0, bool force = false);
+#endif
 
         // apply all stream volumes to the specified output and device
         void applyStreamVolumes(audio_io_handle_t output, audio_devices_t device, int delayMs = 0, bool force = false);
@@ -382,7 +392,11 @@ protected:
                              audio_devices_t device = (audio_devices_t)0);
 
         // Mute or unmute the stream on the specified output
+#ifdef QCOM_HARDWARE
+        virtual void setStreamMute(int stream,
+#else
         void setStreamMute(int stream,
+#endif
                            bool on,
                            audio_io_handle_t output,
                            int delayMs = 0,
@@ -485,7 +499,11 @@ protected:
                                    uint32_t samplingRate,
                                    uint32_t format,
                                    uint32_t channelMask);
+#ifdef QCOM_HARDWARE
+        virtual IOProfile *getProfileForDirectOutput(audio_devices_t device,
+#else
         IOProfile *getProfileForDirectOutput(audio_devices_t device,
+#endif
                                                        uint32_t samplingRate,
                                                        uint32_t format,
                                                        uint32_t channelMask,

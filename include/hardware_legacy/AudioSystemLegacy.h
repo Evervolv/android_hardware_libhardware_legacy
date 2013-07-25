@@ -61,8 +61,14 @@ enum audio_source {
     AUDIO_SOURCE_CAMCORDER = 5,
     AUDIO_SOURCE_VOICE_RECOGNITION = 6,
     AUDIO_SOURCE_VOICE_COMMUNICATION = 7,
-    AUDIO_SOURCE_MAX = AUDIO_SOURCE_VOICE_COMMUNICATION,
-
+    AUDIO_SOURCE_REMOTE_SUBMIX = 8,
+#if defined(QCOM_FM_ENABLED) || defined(STE_FM)
+    AUDIO_SOURCE_FM_RX = 9,
+    AUDIO_SOURCE_FM_RX_A2DP = 10,
+    AUDIO_SOURCE_MAX = AUDIO_SOURCE_FM_RX_A2DP,
+#else
+    AUDIO_SOURCE_MAX = AUDIO_SOURCE_REMOTE_SUBMIX,
+#endif
     AUDIO_SOURCE_LIST_END  // must be last - used to validate audio source type
 };
 
@@ -81,6 +87,9 @@ public:
         ENFORCED_AUDIBLE = 7, // Sounds that cannot be muted by user and must be routed to speaker
         DTMF             = 8,
         TTS              = 9,
+#ifdef QCOM_FM_ENABLED
+        FM               = 10,
+#endif
         NUM_STREAM_TYPES
     };
 
@@ -133,6 +142,8 @@ public:
         HE_AAC_V1           = 0x05000000,
         HE_AAC_V2           = 0x06000000,
         VORBIS              = 0x07000000,
+        EVRC                = 0x08000000,
+        QCELP               = 0x09000000,
         MAIN_FORMAT_MASK    = 0xFF000000,
         SUB_FORMAT_MASK     = 0x00FFFFFF,
         // Aliases
@@ -243,16 +254,52 @@ public:
         DEVICE_OUT_AUX_DIGITAL = 0x400,
         DEVICE_OUT_ANLG_DOCK_HEADSET = 0x800,
         DEVICE_OUT_DGTL_DOCK_HEADSET = 0x1000,
+#ifdef QCOM_HARDWARE
+        DEVICE_OUT_USB_ACCESSORY = 0x2000,
+        DEVICE_OUT_USB_DEVICE = 0x4000,
+#endif
+#if defined(QCOM_FM_ENABLED) || defined(STE_FM)
+        DEVICE_OUT_FM = 0x8000,
+        DEVICE_OUT_FM_TX = 0x10000,
+#endif
+#ifdef QCOM_HARDWARE
+        DEVICE_OUT_ANC_HEADSET = 0x20000,
+        DEVICE_OUT_ANC_HEADPHONE = 0x40000,
+        DEVICE_OUT_PROXY = 0x80000,
+        DEVICE_OUT_DEFAULT = DEVICE_OUT_SPEAKER,
+#else
         DEVICE_OUT_DEFAULT = 0x8000,
+#endif
         DEVICE_OUT_ALL = (DEVICE_OUT_EARPIECE | DEVICE_OUT_SPEAKER | DEVICE_OUT_WIRED_HEADSET |
                 DEVICE_OUT_WIRED_HEADPHONE | DEVICE_OUT_BLUETOOTH_SCO | DEVICE_OUT_BLUETOOTH_SCO_HEADSET |
                 DEVICE_OUT_BLUETOOTH_SCO_CARKIT | DEVICE_OUT_BLUETOOTH_A2DP | DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES |
                 DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER | DEVICE_OUT_AUX_DIGITAL |
                 DEVICE_OUT_ANLG_DOCK_HEADSET | DEVICE_OUT_DGTL_DOCK_HEADSET |
+#ifdef QCOM_HARDWARE
+                DEVICE_OUT_USB_ACCESSORY | DEVICE_OUT_USB_DEVICE |
+                DEVICE_OUT_ANC_HEADSET | DEVICE_OUT_ANC_HEADPHONE |
+                DEVICE_OUT_PROXY |
+#endif
+#if defined(QCOM_FM_ENABLED) || defined(STE_FM)
+                DEVICE_OUT_FM | DEVICE_OUT_FM_TX |
+#endif
                 DEVICE_OUT_DEFAULT),
         DEVICE_OUT_ALL_A2DP = (DEVICE_OUT_BLUETOOTH_A2DP | DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES |
                 DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER),
+#ifdef QCOM_HARDWARE
+        DEVICE_OUT_ALL_USB = (DEVICE_OUT_USB_ACCESSORY | DEVICE_OUT_USB_DEVICE),
 
+        // input devices
+        DEVICE_IN_COMMUNICATION = 0x100000,
+        DEVICE_IN_AMBIENT = 0x200000,
+        DEVICE_IN_BUILTIN_MIC = 0x400000,
+        DEVICE_IN_BLUETOOTH_SCO_HEADSET = 0x800000,
+        DEVICE_IN_WIRED_HEADSET = 0x1000000,
+        DEVICE_IN_AUX_DIGITAL = 0x2000000,
+        DEVICE_IN_VOICE_CALL = 0x4000000,
+        DEVICE_IN_BACK_MIC = 0x8000000,
+        DEVICE_IN_ANC_HEADSET = 0x10000000,
+#else
         // input devices
         DEVICE_IN_COMMUNICATION = 0x10000,
         DEVICE_IN_AMBIENT = 0x20000,
@@ -263,10 +310,27 @@ public:
         DEVICE_IN_VOICE_CALL = 0x400000,
         DEVICE_IN_BACK_MIC = 0x800000,
         DEVICE_IN_DEFAULT = 0x80000000,
+#endif
+#if defined(QCOM_FM_ENABLED) || defined(STE_FM)
+        DEVICE_IN_FM_RX = 0x20000000,
+        DEVICE_IN_FM_RX_A2DP = 0x40000000,
+#endif
+#ifdef QCOM_HARDWARE
+        DEVICE_IN_DEFAULT = DEVICE_IN_BUILTIN_MIC,
+        DEVICE_IN_ANLG_DOCK_HEADSET = 0x80000000,
+        DEVICE_IN_PROXY = DEVICE_IN_ANLG_DOCK_HEADSET,
+#endif
 
         DEVICE_IN_ALL = (DEVICE_IN_COMMUNICATION | DEVICE_IN_AMBIENT | DEVICE_IN_BUILTIN_MIC |
                 DEVICE_IN_BLUETOOTH_SCO_HEADSET | DEVICE_IN_WIRED_HEADSET | DEVICE_IN_AUX_DIGITAL |
-                DEVICE_IN_VOICE_CALL | DEVICE_IN_BACK_MIC | DEVICE_IN_DEFAULT)
+                DEVICE_IN_VOICE_CALL | DEVICE_IN_BACK_MIC |
+#ifdef QCOM_HARDWARE
+                DEVICE_IN_ANC_HEADSET | DEVICE_IN_PROXY | DEVICE_IN_ANLG_DOCK_HEADSET |
+#endif
+#if defined(QCOM_FM_ENABLED) || defined(STE_FM)
+                DEVICE_IN_FM_RX | DEVICE_IN_FM_RX_A2DP |
+#endif
+                DEVICE_IN_DEFAULT)
     };
 
     // request to open a direct output with getOutput() (by opposition to sharing an output with other AudioTracks)
