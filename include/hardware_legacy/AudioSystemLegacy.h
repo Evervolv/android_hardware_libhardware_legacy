@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (c) 2011-2013, The Linux Foundation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,8 +88,11 @@ public:
         ENFORCED_AUDIBLE = 7, // Sounds that cannot be muted by user and must be routed to speaker
         DTMF             = 8,
         TTS              = 9,
+#ifdef QCOM_HARDWARE
+        INCALL_MUSIC     = 10,
+#endif
 #ifdef QCOM_FM_ENABLED
-        FM               = 10,
+        FM               = 11,
 #endif
         NUM_STREAM_TYPES
     };
@@ -142,8 +146,12 @@ public:
         HE_AAC_V1           = 0x05000000,
         HE_AAC_V2           = 0x06000000,
         VORBIS              = 0x07000000,
+#ifdef QCOM_HARDWARE
         EVRC                = 0x08000000,
         QCELP               = 0x09000000,
+        EVRCB               = 0x10000000,
+        EVRCWB              = 0x11000000,
+#endif
         MAIN_FORMAT_MASK    = 0xFF000000,
         SUB_FORMAT_MASK     = 0x00FFFFFF,
         // Aliases
@@ -288,8 +296,10 @@ public:
                 DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER),
 #ifdef QCOM_HARDWARE
         DEVICE_OUT_ALL_USB = (DEVICE_OUT_USB_ACCESSORY | DEVICE_OUT_USB_DEVICE),
+#endif
 
         // input devices
+#ifdef QCOM_HARDWARE
         DEVICE_IN_COMMUNICATION = 0x100000,
         DEVICE_IN_AMBIENT = 0x200000,
         DEVICE_IN_BUILTIN_MIC = 0x400000,
@@ -299,8 +309,12 @@ public:
         DEVICE_IN_VOICE_CALL = 0x4000000,
         DEVICE_IN_BACK_MIC = 0x8000000,
         DEVICE_IN_ANC_HEADSET = 0x10000000,
+        DEVICE_IN_FM_RX = 0x20000000,
+        DEVICE_IN_FM_RX_A2DP = 0x40000000,
+        DEVICE_IN_DEFAULT = DEVICE_IN_BUILTIN_MIC,
+        DEVICE_IN_ANLG_DOCK_HEADSET = 0x80000000,
+        DEVICE_IN_PROXY = DEVICE_IN_ANLG_DOCK_HEADSET,
 #else
-        // input devices
         DEVICE_IN_COMMUNICATION = 0x10000,
         DEVICE_IN_AMBIENT = 0x20000,
         DEVICE_IN_BUILTIN_MIC = 0x40000,
@@ -311,21 +325,17 @@ public:
         DEVICE_IN_BACK_MIC = 0x800000,
         DEVICE_IN_DEFAULT = 0x80000000,
 #endif
-#if defined(QCOM_FM_ENABLED) || defined(STE_FM)
-        DEVICE_IN_FM_RX = 0x20000000,
-        DEVICE_IN_FM_RX_A2DP = 0x40000000,
-#endif
-#ifdef QCOM_HARDWARE
-        DEVICE_IN_DEFAULT = DEVICE_IN_BUILTIN_MIC,
-        DEVICE_IN_ANLG_DOCK_HEADSET = 0x80000000,
-        DEVICE_IN_PROXY = DEVICE_IN_ANLG_DOCK_HEADSET,
+
+#if defined (STE_FM)
+        DEVICE_IN_FM_RX = 0x1000000,
 #endif
 
         DEVICE_IN_ALL = (DEVICE_IN_COMMUNICATION | DEVICE_IN_AMBIENT | DEVICE_IN_BUILTIN_MIC |
                 DEVICE_IN_BLUETOOTH_SCO_HEADSET | DEVICE_IN_WIRED_HEADSET | DEVICE_IN_AUX_DIGITAL |
                 DEVICE_IN_VOICE_CALL | DEVICE_IN_BACK_MIC |
 #ifdef QCOM_HARDWARE
-                DEVICE_IN_ANC_HEADSET | DEVICE_IN_PROXY | DEVICE_IN_ANLG_DOCK_HEADSET |
+                DEVICE_IN_ANC_HEADSET |
+                DEVICE_IN_ANLG_DOCK_HEADSET | DEVICE_IN_PROXY |
 #endif
 #if defined(QCOM_FM_ENABLED) || defined(STE_FM)
                 DEVICE_IN_FM_RX | DEVICE_IN_FM_RX_A2DP |
