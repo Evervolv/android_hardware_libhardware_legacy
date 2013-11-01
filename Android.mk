@@ -14,6 +14,16 @@ LOCAL_SHARED_LIBRARIES := libcutils liblog
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/include
 LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)/include
 
+ifdef USES_TI_MAC80211
+ifneq ($(wildcard external/libnl),)
+LOCAL_SHARED_LIBRARIES += libnl
+LOCAL_C_INCLUDES += external/libnl/include
+else
+LOCAL_STATIC_LIBRARIES := libnl_2
+LOCAL_C_INCLUDES += external/libnl-headers
+endif
+endif
+
 LOCAL_CFLAGS  += -DQEMU_HARDWARE -Wno-unused-parameter -Wno-gnu-designator
 QEMU_HARDWARE := true
 
