@@ -365,8 +365,10 @@ static int create_legacy_ap(const struct audio_policy_device *device,
     lap->policy.init_stream_volume = ap_init_stream_volume;
     lap->policy.set_stream_volume_index = ap_set_stream_volume_index;
     lap->policy.get_stream_volume_index = ap_get_stream_volume_index;
+#ifndef ICS_AUDIO_BLOB
     lap->policy.set_stream_volume_index_for_device = ap_set_stream_volume_index_for_device;
     lap->policy.get_stream_volume_index_for_device = ap_get_stream_volume_index_for_device;
+#endif
     lap->policy.get_strategy_for_stream = ap_get_strategy_for_stream;
     lap->policy.get_devices_for_stream = ap_get_devices_for_stream;
     lap->policy.get_output_for_effect = ap_get_output_for_effect;
@@ -374,8 +376,12 @@ static int create_legacy_ap(const struct audio_policy_device *device,
     lap->policy.unregister_effect = ap_unregister_effect;
     lap->policy.set_effect_enabled = ap_set_effect_enabled;
     lap->policy.is_stream_active = ap_is_stream_active;
+#ifndef ICS_AUDIO_BLOB
+#ifndef MR1_AUDIO_BLOB
     lap->policy.is_stream_active_remotely = ap_is_stream_active_remotely;
+#endif
     lap->policy.is_source_active = ap_is_source_active;
+#endif
     lap->policy.dump = ap_dump;
     lap->policy.is_offload_supported = ap_is_offload_supported;
 

@@ -123,3 +123,13 @@ release_wake_lock(const char* id)
     ssize_t len = write(g_fds[RELEASE_WAKE_LOCK], id, strlen(id));
     return len >= 0;
 }
+
+#ifdef SAMSUNG_DVFS
+void acquire_dvfs_lock()
+{
+}
+
+void release_dvfs_lock()
+{
+}
+#endif
