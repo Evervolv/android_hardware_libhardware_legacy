@@ -359,6 +359,21 @@ typedef struct {
         NanVersion* version);
     wifi_error (*wifi_nan_get_capabilities)(transaction_id id,
         wifi_interface_handle iface);
+    wifi_error (*wifi_nan_data_interface_create)(transaction_id id,
+                                                 wifi_interface_handle iface,
+                                                 char *iface_name);
+    wifi_error (*wifi_nan_data_interface_delete)(transaction_id id,
+                                                 wifi_interface_handle iface,
+                                                 char *iface_name);
+    wifi_error (*wifi_nan_data_request_initiator)(
+        transaction_id id, wifi_interface_handle iface,
+        NanDataPathInitiatorRequest *msg);
+    wifi_error (*wifi_nan_data_indication_response)(
+        transaction_id id, wifi_interface_handle iface,
+        NanDataPathIndicationResponse *msg);
+    wifi_error (*wifi_nan_data_end)(transaction_id id,
+                                    wifi_interface_handle iface,
+                                    NanDataPathEndRequest *msg);
 
     /**
      * Returns the chipset's hardware filtering capabilities:
