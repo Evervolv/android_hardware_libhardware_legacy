@@ -72,9 +72,6 @@ static char primary_iface[PROPERTY_VALUE_MAX];
 #ifndef WIFI_DRIVER_MODULE_ARG
 #define WIFI_DRIVER_MODULE_ARG          ""
 #endif
-#ifndef WIFI_FIRMWARE_LOADER
-#define WIFI_FIRMWARE_LOADER		""
-#endif
 #define WIFI_TEST_INTERFACE		"sta"
 
 #ifndef WIFI_DRIVER_FW_PATH_STA
@@ -100,7 +97,6 @@ static const char DRIVER_MODULE_TAG[]   = WIFI_DRIVER_MODULE_NAME " ";
 static const char DRIVER_MODULE_PATH[]  = WIFI_DRIVER_MODULE_PATH;
 static const char DRIVER_MODULE_ARG[]   = WIFI_DRIVER_MODULE_ARG;
 #endif
-static const char FIRMWARE_LOADER[]     = WIFI_FIRMWARE_LOADER;
 static const char DRIVER_PROP_NAME[]    = "wlan.driver.status";
 static const char SUPPLICANT_NAME[]     = "wpa_supplicant";
 static const char SUPP_PROP_NAME[]      = "init.svc.wpa_supplicant";
@@ -227,9 +223,6 @@ int is_wifi_driver_loaded() {
 int wifi_load_driver()
 {
 #ifdef WIFI_DRIVER_MODULE_PATH
-    char driver_status[PROPERTY_VALUE_MAX];
-    int count = 100; /* wait at most 20 seconds for completion */
-
     if (is_wifi_driver_loaded()) {
         return 0;
     }
@@ -237,30 +230,7 @@ int wifi_load_driver()
     if (insmod(DRIVER_MODULE_PATH, DRIVER_MODULE_ARG) < 0)
         return -1;
 
-    if (strcmp(FIRMWARE_LOADER,"") == 0) {
-        /* usleep(WIFI_DRIVER_LOADER_DELAY); */
-        property_set(DRIVER_PROP_NAME, "ok");
-    }
-    else {
-        property_set("ctl.start", FIRMWARE_LOADER);
-    }
-    sched_yield();
-    while (count-- > 0) {
-        if (property_get(DRIVER_PROP_NAME, driver_status, NULL)) {
-            if (strcmp(driver_status, "ok") == 0)
-                return 0;
-            else if (strcmp(driver_status, "failed") == 0) {
-                wifi_unload_driver();
-                return -1;
-            }
-        }
-        usleep(200000);
-    }
-    property_set(DRIVER_PROP_NAME, "timeout");
-    wifi_unload_driver();
-    return -1;
-#else
-#ifdef WIFI_DRIVER_STATE_CTRL_PARAM
+#elif defined WIFI_DRIVER_STATE_CTRL_PARAM
     if (is_wifi_driver_loaded()) {
         return 0;
     }
@@ -270,7 +240,6 @@ int wifi_load_driver()
 #endif
     property_set(DRIVER_PROP_NAME, "ok");
     return 0;
-#endif
 }
 
 int wifi_unload_driver()
