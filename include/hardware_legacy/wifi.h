@@ -108,30 +108,6 @@ int wifi_wait_for_event(char *buf, size_t len);
 int wifi_command(const char *command, char *reply, size_t *reply_len);
 
 /**
- * do_dhcp_request() issues a dhcp request and returns the acquired
- * information. 
- * 
- * All IPV4 addresses/mask are in network byte order.
- *
- * @param ipaddr return the assigned IPV4 address
- * @param gateway return the gateway being used
- * @param mask return the IPV4 mask
- * @param dns1 return the IPV4 address of a DNS server
- * @param dns2 return the IPV4 address of a DNS server
- * @param server return the IPV4 address of DHCP server
- * @param lease return the length of lease in seconds.
- *
- * @return 0 if successful, < 0 if error.
- */
-int do_dhcp_request(int *ipaddr, int *gateway, int *mask,
-                   int *dns1, int *dns2, int *server, int *lease);
-
-/**
- * Return the error string of the last do_dhcp_request().
- */
-const char *get_dhcp_error_string();
-
-/**
  * Return the path to requested firmware
  */
 #define WIFI_GET_FW_PATH_STA	0

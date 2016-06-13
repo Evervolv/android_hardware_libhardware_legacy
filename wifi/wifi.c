@@ -39,11 +39,6 @@
 #define _REALLY_INCLUDE_SYS__SYSTEM_PROPERTIES_H_
 #include <sys/_system_properties.h>
 
-extern int do_dhcp();
-extern int ifc_init();
-extern void ifc_close();
-extern char *dhcp_lasterror();
-extern void get_dhcp_info();
 extern int init_module(void *, unsigned long, const char *);
 extern int delete_module(const char *, unsigned int);
 void wifi_close_sockets();
@@ -166,28 +161,6 @@ static int rmmod(const char *modname)
         ALOGD("Unable to unload driver module \"%s\": %s\n",
              modname, strerror(errno));
     return ret;
-}
-
-int do_dhcp_request(int *ipaddr, int *gateway, int *mask,
-                    int *dns1, int *dns2, int *server, int *lease) {
-    /* For test driver, always report success */
-    if (strcmp(primary_iface, WIFI_TEST_INTERFACE) == 0)
-        return 0;
-
-    if (ifc_init() < 0)
-        return -1;
-
-    if (do_dhcp(primary_iface) < 0) {
-        ifc_close();
-        return -1;
-    }
-    ifc_close();
-    get_dhcp_info(ipaddr, gateway, mask, dns1, dns2, server, lease);
-    return 0;
-}
-
-const char *get_dhcp_error_string() {
-    return dhcp_lasterror();
 }
 
 #ifdef WIFI_DRIVER_STATE_CTRL_PARAM
