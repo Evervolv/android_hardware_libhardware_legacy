@@ -26,7 +26,7 @@ class AudioPolicyManagerDefault: public AudioPolicyManagerBase
 {
 
 public:
-                AudioPolicyManagerDefault(AudioPolicyClientInterface *clientInterface)
+                explicit AudioPolicyManagerDefault(AudioPolicyClientInterface *clientInterface)
                 : AudioPolicyManagerBase(clientInterface) {}
 
         virtual ~AudioPolicyManagerDefault() {}
