@@ -22,6 +22,9 @@ LOCAL_SHARED_LIBRARIES += libdl
 
 include $(SAVE_MAKEFILES)
 
+# TODO: Remove this line b/29915755
+LOCAL_WHOLE_STATIC_LIBRARIES := libwifi-hal-common
+
 LOCAL_MODULE:= libhardware_legacy
 
 include $(BUILD_SHARED_LIBRARY)
