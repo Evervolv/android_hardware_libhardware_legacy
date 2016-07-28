@@ -148,7 +148,8 @@ typedef enum {
     NAN_STATUS_NO_OTA_ACK = 23,
     NAN_STATUS_TX_FAIL = 24,
     NAN_STATUS_ALREADY_ENABLED = 25,
-    /* 26-4095 Reserved */
+    NAN_STATUS_FOLLOWUP_QUEUE_FULL = 26,
+    /* 27-4095 Reserved */
     /* NAN Configuration Response codes */
     NAN_STATUS_INVALID_RSSI_CLOSE_VALUE = 4096,
     NAN_STATUS_INVALID_RSSI_MIDDLE_VALUE = 4097,
