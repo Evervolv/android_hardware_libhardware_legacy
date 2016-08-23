@@ -248,8 +248,8 @@ typedef enum {
 
 /* NAN SRF State in Subscribe */
 typedef enum {
-    NAN_USE_SRF = 0,
-    NAN_DO_NOT_USE_SRF
+    NAN_DO_NOT_USE_SRF = 0,
+    NAN_USE_SRF
 } NanSRFState;
 
 /* NAN Include SSI in MatchInd */
