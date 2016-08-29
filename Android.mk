@@ -1,7 +1,7 @@
 # Copyright 2006 The Android Open Source Project
 
 # Setting LOCAL_PATH will mess up all-subdir-makefiles, so do it beforehand.
-legacy_modules := power uevent wifi 
+legacy_modules := power uevent
 
 SAVE_MAKEFILES := $(call all-named-subdir-makefiles,$(legacy_modules))
 LEGACY_AUDIO_MAKEFILES := $(call all-named-subdir-makefiles,audio)
@@ -21,6 +21,9 @@ QEMU_HARDWARE := true
 LOCAL_SHARED_LIBRARIES += libdl
 
 include $(SAVE_MAKEFILES)
+
+# TODO: Remove this line b/29915755
+LOCAL_WHOLE_STATIC_LIBRARIES := libwifi-hal-common
 
 LOCAL_MODULE:= libhardware_legacy
 
