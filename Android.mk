@@ -23,7 +23,9 @@ LOCAL_SHARED_LIBRARIES += libdl
 include $(SAVE_MAKEFILES)
 
 # TODO: Remove this line b/29915755
+ifndef BRILLO
 LOCAL_WHOLE_STATIC_LIBRARIES := libwifi-hal-common
+endif
 
 LOCAL_MODULE:= libhardware_legacy
 
