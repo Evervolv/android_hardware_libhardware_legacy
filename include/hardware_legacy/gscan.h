@@ -93,9 +93,6 @@ typedef struct {
     // other fields
 } wifi_scan_result;
 
-static_assert(MAX_BUCKETS <= 8 * sizeof(unsigned),
-        "The buckets_scanned bitset is represented by an unsigned int and cannot support this many "
-        "buckets on this platform.");
 typedef struct {
     /* reported when each probe response is received, if report_events
      * enabled in wifi_scan_cmd_params. buckets_scanned is a bitset of the

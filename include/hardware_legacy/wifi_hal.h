@@ -87,6 +87,7 @@ wifi_error wifi_initialize(wifi_handle *handle);
 typedef void (*wifi_cleaned_up_handler) (wifi_handle handle);
 void wifi_cleanup(wifi_handle handle, wifi_cleaned_up_handler handler);
 void wifi_event_loop(wifi_handle handle);
+wifi_interface_handle wifi_get_iface_handle(wifi_handle handle, char *name);
 
 /* Error handling */
 void wifi_get_error_info(wifi_error err, const char **msg); // return a pointer to a static string
