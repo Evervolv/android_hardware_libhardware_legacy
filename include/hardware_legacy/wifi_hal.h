@@ -57,7 +57,8 @@ typedef enum {
     WIFI_ERROR_INVALID_REQUEST_ID = -6,
     WIFI_ERROR_TIMED_OUT = -7,
     WIFI_ERROR_TOO_MANY_REQUESTS = -8,          // Too many instances of this request
-    WIFI_ERROR_OUT_OF_MEMORY = -9
+    WIFI_ERROR_OUT_OF_MEMORY = -9,
+    WIFI_ERROR_BUSY = -10,
 } wifi_error;
 
 typedef unsigned char byte;
@@ -115,6 +116,9 @@ void wifi_get_error_info(wifi_error err, const char **msg); // return a pointer 
 #define WIFI_FEATURE_MKEEP_ALIVE        0x100000    // WiFi mkeep_alive
 #define WIFI_FEATURE_CONFIG_NDO         0x200000    // ND offload configure
 #define WIFI_FEATURE_TX_TRANSMIT_POWER  0x400000    // Capture Tx transmit power levels
+#define WIFI_FEATURE_CONTROL_ROAMING    0x800000    // Enable/Disable firmware roaming
+#define WIFI_FEATURE_IE_WHITELIST       0x1000000   // Support Probe IE white listing
+#define WIFI_FEATURE_SCAN_RAND          0x2000000   // Support MAC & Probe Sequence Number randomization
 // Add more features here
 
 
@@ -215,6 +219,7 @@ typedef struct wlan_driver_wake_reason_cnt_t {
 #include "wifi_config.h"
 #include "wifi_nan.h"
 #include "wifi_offload.h"
+#include "roam.h"
 
 //wifi HAL function pointer table
 typedef struct {
@@ -292,8 +297,6 @@ typedef struct {
     wifi_error (* wifi_set_passpoint_list)(wifi_request_id id, wifi_interface_handle iface,
             int num, wifi_passpoint_network *networks, wifi_passpoint_event_handler handler);
     wifi_error (* wifi_reset_passpoint_list)(wifi_request_id id, wifi_interface_handle iface);
-    wifi_error (*wifi_set_bssid_blacklist)(wifi_request_id id, wifi_interface_handle iface,
-                  wifi_bssid_params params);
     wifi_error (*wifi_set_lci) (wifi_request_id id, wifi_interface_handle iface,
 	                             wifi_lci_information *lci);
     wifi_error (*wifi_set_lcr) (wifi_request_id id, wifi_interface_handle iface,
@@ -392,6 +395,12 @@ typedef struct {
      */
     wifi_error (*wifi_set_packet_filter)(wifi_interface_handle handle,
                                          const u8 *program, u32 len);
+    wifi_error (*wifi_get_roaming_capabilities)(wifi_interface_handle handle,
+                                                wifi_roaming_capabilities *caps);
+    wifi_error (*wifi_enable_firmware_roaming)(wifi_interface_handle handle,
+                                               fw_roaming_state_t state);
+    wifi_error (*wifi_configure_roaming)(wifi_interface_handle handle,
+                                         wifi_roaming_config *roaming_config);
 } wifi_hal_fn;
 wifi_error init_wifi_vendor_hal_func_table(wifi_hal_fn *fn);
 #ifdef __cplusplus
