@@ -31,30 +31,6 @@ LOCAL_MODULE:= libhardware_legacy
 
 include $(BUILD_SHARED_LIBRARY)
 
-# static library for librpc
-include $(CLEAR_VARS)
-
-LOCAL_MODULE:= libpower
-
-LOCAL_SRC_FILES += power/power.c
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/include
-LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)/include
-
-include $(BUILD_STATIC_LIBRARY)
-
-# shared library for various HALs
-include $(CLEAR_VARS)
-
-LOCAL_MODULE := libpower
-
-LOCAL_SRC_FILES := power/power.c
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/include
-LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)/include
-
-LOCAL_SHARED_LIBRARIES := libcutils
-
-include $(BUILD_SHARED_LIBRARY)
-
 # legacy_audio builds it's own set of libraries that aren't linked into
 # hardware_legacy
 include $(LEGACY_AUDIO_MAKEFILES)
