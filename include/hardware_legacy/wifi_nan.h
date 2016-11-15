@@ -57,6 +57,7 @@ typedef u32 NanDataPathId;
 #define NAN_MAX_POSTDISCOVERY_LEN               5
 #define NAN_MAX_FRAME_DATA_LEN                  504
 #define NAN_DP_MAX_APP_INFO_LEN                 512
+#define NAN_ERROR_STR_LEN                       255
 
 /*
   Definition of various NanResponseType
@@ -123,90 +124,32 @@ typedef enum {
 typedef enum {
     /* NAN Protocol Response Codes */
     NAN_STATUS_SUCCESS = 0,
-    NAN_STATUS_TIMEOUT = 1,
-    NAN_STATUS_DE_FAILURE = 2,
-    NAN_STATUS_INVALID_MSG_VERSION = 3,
-    NAN_STATUS_INVALID_MSG_LEN = 4,
-    NAN_STATUS_INVALID_MSG_ID = 5,
-    NAN_STATUS_INVALID_HANDLE = 6,
-    NAN_STATUS_NO_SPACE_AVAILABLE = 7,
-    NAN_STATUS_INVALID_PUBLISH_TYPE = 8,
-    NAN_STATUS_INVALID_TX_TYPE = 9,
-    NAN_STATUS_INVALID_MATCH_ALGORITHM = 10,
-    NAN_STATUS_DISABLE_IN_PROGRESS = 11,
-    NAN_STATUS_INVALID_TLV_LEN = 12,
-    NAN_STATUS_INVALID_TLV_TYPE = 13,
-    NAN_STATUS_MISSING_TLV_TYPE = 14,
-    NAN_STATUS_INVALID_TOTAL_TLVS_LEN = 15,
-    NAN_STATUS_INVALID_MATCH_HANDLE= 16,
-    NAN_STATUS_INVALID_TLV_VALUE = 17,
-    NAN_STATUS_INVALID_TX_PRIORITY = 18,
-    NAN_STATUS_INVALID_CONNECTION_MAP = 19,
-    NAN_STATUS_INVALID_TCA_ID = 20,
-    NAN_STATUS_INVALID_STATS_ID = 21,
-    NAN_STATUS_NAN_NOT_ALLOWED = 22,
-    NAN_STATUS_NO_OTA_ACK = 23,
-    NAN_STATUS_TX_FAIL = 24,
-    NAN_STATUS_ALREADY_ENABLED = 25,
-    NAN_STATUS_FOLLOWUP_QUEUE_FULL = 26,
-    /* 27-4095 Reserved */
-    /* NAN Configuration Response codes */
-    NAN_STATUS_INVALID_RSSI_CLOSE_VALUE = 4096,
-    NAN_STATUS_INVALID_RSSI_MIDDLE_VALUE = 4097,
-    NAN_STATUS_INVALID_HOP_COUNT_LIMIT = 4098,
-    NAN_STATUS_INVALID_MASTER_PREFERENCE_VALUE = 4099,
-    NAN_STATUS_INVALID_LOW_CLUSTER_ID_VALUE = 4100,
-    NAN_STATUS_INVALID_HIGH_CLUSTER_ID_VALUE = 4101,
-    NAN_STATUS_INVALID_BACKGROUND_SCAN_PERIOD = 4102,
-    NAN_STATUS_INVALID_RSSI_PROXIMITY_VALUE = 4103,
-    NAN_STATUS_INVALID_SCAN_CHANNEL = 4104,
-    NAN_STATUS_INVALID_POST_NAN_CONNECTIVITY_CAPABILITIES_BITMAP = 4105,
-    NAN_STATUS_INVALID_FURTHER_AVAILABILITY_MAP_NUMCHAN_VALUE = 4106,
-    NAN_STATUS_INVALID_FURTHER_AVAILABILITY_MAP_DURATION_VALUE = 4107,
-    NAN_STATUS_INVALID_FURTHER_AVAILABILITY_MAP_CLASS_VALUE = 4108,
-    NAN_STATUS_INVALID_FURTHER_AVAILABILITY_MAP_CHANNEL_VALUE = 4109,
-    NAN_STATUS_INVALID_FURTHER_AVAILABILITY_MAP_AVAILABILITY_INTERVAL_BITMAP_VALUE = 4110,
-    NAN_STATUS_INVALID_FURTHER_AVAILABILITY_MAP_MAP_ID = 4111,
-    NAN_STATUS_INVALID_POST_NAN_DISCOVERY_CONN_TYPE_VALUE = 4112,
-    NAN_STATUS_INVALID_POST_NAN_DISCOVERY_DEVICE_ROLE_VALUE = 4113,
-    NAN_STATUS_INVALID_POST_NAN_DISCOVERY_DURATION_VALUE = 4114,
-    NAN_STATUS_INVALID_POST_NAN_DISCOVERY_BITMAP_VALUE = 4115,
-    NAN_STATUS_MISSING_FUTHER_AVAILABILITY_MAP = 4116,
-    NAN_STATUS_INVALID_BAND_CONFIG_FLAGS = 4117,
-    NAN_STATUS_INVALID_RANDOM_FACTOR_UPDATE_TIME_VALUE = 4118,
-    NAN_STATUS_INVALID_ONGOING_SCAN_PERIOD = 4119,
-    NAN_STATUS_INVALID_DW_INTERVAL_VALUE = 4120,
-    NAN_STATUS_INVALID_DB_INTERVAL_VALUE = 4121,
-    /* 4122-8191 RESERVED */
-    NAN_TERMINATED_REASON_INVALID = 8192,
-    NAN_TERMINATED_REASON_TIMEOUT = 8193,
-    NAN_TERMINATED_REASON_USER_REQUEST = 8194,
-    NAN_TERMINATED_REASON_FAILURE = 8195,
-    NAN_TERMINATED_REASON_COUNT_REACHED = 8196,
-    NAN_TERMINATED_REASON_DE_SHUTDOWN = 8197,
-    NAN_TERMINATED_REASON_DISABLE_IN_PROGRESS = 8198,
-    NAN_TERMINATED_REASON_POST_DISC_ATTR_EXPIRED = 8199,
-    NAN_TERMINATED_REASON_POST_DISC_LEN_EXCEEDED = 8200,
-    NAN_TERMINATED_REASON_FURTHER_AVAIL_MAP_EMPTY = 8201,
-    /* 9000-9500 NDP Status type */
-    NDP_UNSUPPORTED_CONCURRENCY = 9000,
-    NDP_NAN_DATA_IFACE_CREATE_FAILED = 9001,
-    NDP_NAN_DATA_IFACE_DELETE_FAILED = 9002,
-    NDP_DATA_INITIATOR_REQUEST_FAILED = 9003,
-    NDP_DATA_RESPONDER_REQUEST_FAILED = 9004,
-    NDP_INVALID_SERVICE_INSTANCE_ID = 9005,
-    NDP_INVALID_NDP_INSTANCE_ID = 9006,
-    NDP_INVALID_RESPONSE_CODE = 9007,
-    NDP_INVALID_APP_INFO_LEN = 9008,
-    /* OTA failures and timeouts during negotiation */
-    NDP_MGMT_FRAME_REQUEST_FAILED = 9009,
-    NDP_MGMT_FRAME_RESPONSE_FAILED = 9010,
-    NDP_MGMT_FRAME_CONFIRM_FAILED = 9011,
-    NDP_END_FAILED = 9012,
-    NDP_MGMT_FRAME_END_REQUEST_FAILED = 9013,
-
-    /* 9500 onwards vendor specific error codes */
-    NDP_VENDOR_SPECIFIC_ERROR = 9500
+    /*  NAN Discovery Engine/Host driver failures */
+    NAN_STATUS_INTERNAL_FAILURE = 1,
+    /*  NAN OTA failures */
+    NAN_STATUS_PROTOCOL_FAILURE = 2,
+    /* if the publish/subscribe id is invalid */
+    NAN_STATUS_INVALID_PUBLISH_SUBSCRIBE_ID = 3,
+    /* If we run out of resources allocated */
+    NAN_STATUS_NO_RESOURCE_AVAILABLE = 4,
+    /* if invalid params are passed */
+    NAN_STATUS_INVALID_PARAM = 5,
+    /*  if the requestor instance id is invalid */
+    NAN_STATUS_INVALID_REQUESTOR_INSTANCE_ID = 6,
+    /*  if the service instance id is invalid */
+    NAN_STATUS_INVALID_SERVICE_INSTANCE_ID = 7,
+    /*  if the ndp id is invalid */
+    NAN_STATUS_INVALID_NDP_ID = 8,
+    /* if NAN is enabled when wifi is turned off */
+    NAN_STATUS_NAN_NOT_ALLOWED = 9,
+    /* if over the air ack is not received */
+    NAN_STATUS_NO_OTA_ACK = 10,
+    /* If NAN is already enabled and we are try to re-enable the same */
+    NAN_STATUS_ALREADY_ENABLED = 11,
+    /* If followup message internal queue is full */
+    NAN_STATUS_FOLLOWUP_QUEUE_FULL = 12,
+    /* Unsupported concurrency session enabled, NAN disabled notified */
+    NAN_STATUS_UNSUPPORTED_CONCURRENCY_NAN_DISABLED = 13
 } NanStatusType;
 
 /* NAN Transmit Types */
@@ -1364,7 +1307,8 @@ typedef struct {
 */
 typedef struct {
     NanStatusType status; /* contains the result code */
-    u32 value; /* For error returns the value is returned which was in error */
+    char nan_error[NAN_ERROR_STR_LEN]; /* Describe the NAN error type */
+    u32 value; /* Deprecated - do not use */
     NanResponseType response_type; /* NanResponseType Definitions */
     union {
         NanPublishResponse publish_response;
@@ -1383,7 +1327,12 @@ typedef struct {
 typedef struct {
     /* Id returned during the initial Publish */
     u16 publish_id;
+    /*
+      For all user configured termination NAN_STATUS_SUCCESS
+      and no other reasons expected from firmware.
+    */
     NanStatusType reason;
+    char nan_reason[NAN_ERROR_STR_LEN]; /* Describe the NAN reason type */
 } NanPublishTerminatedInd;
 
 /*
@@ -1489,7 +1438,12 @@ typedef struct {
 typedef struct {
     /* Id returned during initial Subscribe */
     u16 subscribe_id;
+    /*
+      For all user configured termination NAN_STATUS_SUCCESS
+      and no other reasons expected from firmware.
+    */
     NanStatusType reason;
+    char nan_reason[NAN_ERROR_STR_LEN]; /* Describe the NAN reason type */
 } NanSubscribeTerminatedInd;
 
 /*
@@ -1596,7 +1550,13 @@ typedef struct {
   any in progress Publishes or Subscribes.
 */
 typedef struct {
+    /*
+      Following reasons expected:
+      NAN_STATUS_SUCCESS
+      NAN_STATUS_UNSUPPORTED_CONCURRENCY_NAN_DISABLED
+    */
     NanStatusType reason;
+    char nan_reason[NAN_ERROR_STR_LEN]; /* Describe the NAN reason type */
 } NanDisabledInd;
 
 /*
@@ -1627,7 +1587,13 @@ typedef struct {
 */
 typedef struct {
    transaction_id id;
+   /*
+     Following reason codes returned:
+     NAN_STATUS_NO_OTA_ACK
+     NAN_STATUS_FOLLOWUP_QUEUE_FULL
+   */
    NanStatusType reason;
+   char nan_reason[NAN_ERROR_STR_LEN]; /* Describe the NAN reason type */
 } NanTransmitFollowupInd;
 
 /*
@@ -1797,61 +1763,193 @@ typedef struct {
     void (*EventTransmitFollowup) (NanTransmitFollowupInd* event);
 } NanCallbackHandler;
 
-/*  Enable NAN functionality. */
+/**@brief nan_enable_request
+ *        Enable NAN functionality
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanEnableRequest:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_ALREADY_ENABLED
+ *                      NAN_STATUS_INVALID_PARAM
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ *                      NAN_STATUS_PROTOCOL_FAILURE
+ *                      NAN_STATUS_NAN_NOT_ALLOWED
+ */
 wifi_error nan_enable_request(transaction_id id,
                               wifi_interface_handle iface,
                               NanEnableRequest* msg);
 
-/*  Disable NAN functionality. */
+/**@brief nan_disbale_request
+ *        Disable NAN functionality.
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanDisableRequest:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_PROTOCOL_FAILURE
+ *
+ */
 wifi_error nan_disable_request(transaction_id id,
                                wifi_interface_handle iface);
 
-/*  Publish request to advertize a service. */
+/**@brief nan_publish_request
+ *        Publish request to advertize a service
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanPublishRequest:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INVALID_PARAM
+ *                      NAN_STATUS_PROTOCOL_FAILURE
+ *                      NAN_STATUS_NO_RESOURCE_AVAILABLE
+ *                      NAN_STATUS_INVALID_PUBLISH_SUBSCRIBE_ID
+ */
 wifi_error nan_publish_request(transaction_id id,
                                wifi_interface_handle iface,
                                NanPublishRequest* msg);
 
-/*  Cancel previous publish requests. */
+/**@brief nan_publish_cancel_request
+ *        Cancel previous publish request
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanPublishCancelRequest:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INVALID_PUBLISH_SUBSCRIBE_ID
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ */
 wifi_error nan_publish_cancel_request(transaction_id id,
                                       wifi_interface_handle iface,
                                       NanPublishCancelRequest* msg);
 
-/*  Subscribe request to search for a service. */
+/**@brief nan_subscribe_request
+ *        Subscribe request to search for a service
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanSubscribeRequest:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INVALID_PARAM
+ *                      NAN_STATUS_PROTOCOL_FAILURE
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ *                      NAN_STATUS_NO_SPACE_AVAILABLE
+ *                      NAN_STATUS_INVALID_PUBLISH_SUBSCRIBE_ID
+ */
 wifi_error nan_subscribe_request(transaction_id id,
                                  wifi_interface_handle iface,
                                  NanSubscribeRequest* msg);
 
-/*  Cancel previous subscribe requests. */
+/**@brief nan_subscribe_cancel_request
+ *         Cancel previous subscribe requests.
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanSubscribeRequest:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INVALID_PUBLISH_SUBSCRIBE_ID
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ */
 wifi_error nan_subscribe_cancel_request(transaction_id id,
                                         wifi_interface_handle iface,
                                         NanSubscribeCancelRequest* msg);
 
-/*  NAN transmit follow up request. */
+/**@brief nan_transmit_followup_request
+ *         NAN transmit follow up request
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanTransmitFollowupRequest:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INVALID_PARAM
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ *                      NAN_STATUS_INVALID_PUBLISH_SUBSCRIBE_ID
+ *                      NAN_STATUS_INVALID_REQUESTOR_INSTANCE_ID
+ * @return Asynchronous TransmitFollowupInd CB return
+ *                      NAN_STATUS_FOLLOWUP_QUEUE_FULL
+ *                      NAN_STATUS_NO_OTA_ACK
+ */
 wifi_error nan_transmit_followup_request(transaction_id id,
                                          wifi_interface_handle iface,
                                          NanTransmitFollowupRequest* msg);
 
-/*  Request NAN statistics from Discovery Engine. */
+/**@brief nan_stats_request
+ *        Request NAN statistics from Discovery Engine.
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanStatsRequest:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ *                      NAN_STATUS_INVALID_PARAM
+ */
 wifi_error nan_stats_request(transaction_id id,
                              wifi_interface_handle iface,
                              NanStatsRequest* msg);
 
-/* NAN configuration request. */
+/**@brief nan_config_request
+ *        NAN configuration request.
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanConfigRequest:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INVALID_PARAM
+ *                      NAN_STATUS_PROTOCOL_FAILURE
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ */
 wifi_error nan_config_request(transaction_id id,
                               wifi_interface_handle iface,
                               NanConfigRequest* msg);
 
-/* Configure the various Threshold crossing alerts. */
+/**@brief nan_tca_request
+ *        Configure the various Threshold crossing alerts
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanStatsRequest:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INVALID_PARAM
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ */
 wifi_error nan_tca_request(transaction_id id,
                            wifi_interface_handle iface,
                            NanTCARequest* msg);
 
-/*
-    Set NAN Beacon or sdf payload to discovery engine.
-    This instructs the Discovery Engine to begin publishing the
-    received payload in any Beacon or Service Discovery Frame
-    transmitted
-*/
+/**@brief nan_beacon_sdf_payload_request
+ *        Set NAN Beacon or sdf payload to discovery engine.
+ *          This instructs the Discovery Engine to begin publishing the
+ *        received payload in any Beacon or Service Discovery Frame transmitted
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanStatsRequest:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INVALID_PARAM
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ */
 wifi_error nan_beacon_sdf_payload_request(transaction_id id,
                                          wifi_interface_handle iface,
                                          NanBeaconSdfPayloadRequest* msg);
@@ -1864,37 +1962,105 @@ wifi_error nan_register_handler(wifi_interface_handle iface,
 wifi_error nan_get_version(wifi_handle handle,
                            NanVersion* version);
 
+/**@brief nan_get_capabilities
+ *        Get NAN Capabilities
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ */
 /*  Get NAN capabilities. */
 wifi_error nan_get_capabilities(transaction_id id,
                                 wifi_interface_handle iface);
 
 /* ========== Nan Data Path APIs ================ */
-/* Create NAN Data Interface */
+/**@brief nan_data_interface_create
+ *        Create NAN Data Interface.
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param iface_name:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INVALID_PARAM
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ */
 wifi_error nan_data_interface_create(transaction_id id,
                                      wifi_interface_handle iface,
                                      char* iface_name);
 
-/* Delete NAN Data Interface */
+/**@brief nan_data_interface_delete
+ *        Delete NAN Data Interface.
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param iface_name:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INVALID_PARAM
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ */
 wifi_error nan_data_interface_delete(transaction_id id,
                                      wifi_interface_handle iface,
                                      char* iface_name);
 
-/* Initiate a NDP session: Initiator */
+/**@brief nan_data_request_initiator
+ *        Initiate a NAN Data Path session.
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanDataPathInitiatorRequest:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INVALID_PARAM
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ *                      NAN_STATUS_PROTOCOL_FAILURE
+ *                      NAN_STATUS_INVALID_SERVICE_INSTANCE_ID
+ */
 wifi_error nan_data_request_initiator(transaction_id id,
                                       wifi_interface_handle iface,
                                       NanDataPathInitiatorRequest* msg);
 
-/*
- Response to a data indication received
- corresponding to a NDP session. An indication
- is received with a data request and the responder
- will send a data response
-*/
+/**@brief nan_data_indication_response
+ *         Response to a data indication received
+ *         corresponding to a NDP session. An indication
+ *         is received with a data request and the responder
+ *         will send a data response
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanDataPathIndicationResponse:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INVALID_PARAM
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ *                      NAN_STATUS_PROTOCOL_FAILURE
+ *                      NAN_STATUS_INVALID_NDP_ID
+ */
 wifi_error nan_data_indication_response(transaction_id id,
                                         wifi_interface_handle iface,
                                         NanDataPathIndicationResponse* msg);
 
-/* NDL termination request: from either Initiator/Responder */
+/**@brief nan_data_end
+ *         NDL termination request: from either Initiator/Responder
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanDataPathEndRequest:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INVALID_PARAM
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ *                      NAN_STATUS_PROTOCOL_FAILURE
+ *                      NAN_STATUS_INVALID_NDP_ID
+ */
 wifi_error nan_data_end(transaction_id id,
                         wifi_interface_handle iface,
                         NanDataPathEndRequest* msg);
