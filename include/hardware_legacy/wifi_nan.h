@@ -238,6 +238,17 @@ typedef struct {
 } NanCapabilities;
 
 /*
+  Nan accept policy: Per service basis policy
+  Based on this policy(ALL/NONE), responder side
+  will send ACCEPT/REJECT
+*/
+typedef enum {
+    /* Default value */
+    NAN_SERVICE_ACCEPT_POLICY_NONE = 0,
+    NAN_SERVICE_ACCEPT_POLICY_ALL
+} NanServiceAcceptPolicy;
+
+/*
   Host can send Vendor specific attributes which the Discovery Engine can
   enclose in Beacons and/or Service Discovery frames transmitted.
   Below structure is used to populate that.
@@ -817,6 +828,10 @@ typedef struct {
       BIT2 - Disable followUp indication received (OTA).
     */
     u8 recv_indication_cfg;
+    /*
+      Nan accept policy for the specific service(publish)
+    */
+    NanServiceAcceptPolicy service_responder_policy;
 } NanPublishRequest;
 
 /*
