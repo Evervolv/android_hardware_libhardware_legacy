@@ -58,6 +58,8 @@ typedef u32 NanDataPathId;
 #define NAN_MAX_FRAME_DATA_LEN                  504
 #define NAN_DP_MAX_APP_INFO_LEN                 512
 #define NAN_ERROR_STR_LEN                       255
+#define NAN_PMK_INFO_LEN                        32
+#define NAN_MAX_SCID_BUF_LEN                    1024
 
 /*
   Definition of various NanResponseType
@@ -112,6 +114,18 @@ typedef enum {
     NAN_EVENT_ID_STARTED_CLUSTER,
     NAN_EVENT_ID_JOINED_CLUSTER
 } NanDiscEngEventType;
+
+/* NAN Data Path type */
+typedef enum {
+    NAN_DATA_PATH_UNICAST_MSG = 0,
+    NAN_DATA_PATH_MULTICAST_MSG
+} NdpType;
+
+/* NAN Ranging Configuration */
+typedef enum {
+    NAN_RANGING_DISABLE = 0,
+    NAN_RANGING_ENABLE
+} NanRangingState;
 
 /* TCA Type */
 typedef enum {
@@ -220,6 +234,35 @@ typedef enum {
     NAN_DP_FORCE_CHANNEL_SETUP
 } NanDataPathChannelCfg;
 
+/* NAN Shared Key Security Cipher Suites Mask */
+#define NAN_CIPHER_SUITE_SHARED_KEY_128_MASK  0x01
+#define NAN_CIPHER_SUITE_SHARED_KEY_256_MASK  0x02
+
+/*
+   Structure to set the Service Descriptor Extension
+   Attribute (SDEA) passed as part of NanPublishRequest/
+   NanSubscribeRequest/NanMatchInd.
+*/
+typedef struct {
+    /*
+       Optional configuration of Data Path Enable request.
+       configure flag determines whether configuration needs
+       to be passed or not.
+    */
+    u8 config_nan_data_path;
+    NdpType ndp_type;
+    /*
+       NAN secuirty required flag to indicate
+       if the security is enabled or disabled
+    */
+    NanDataPathSecurityCfgStatus security_cfg;
+    /*
+       NAN ranging required flag to indicate
+       if ranging is enabled on disabled
+    */
+    NanRangingState ranging_state;
+} NanSdeaCtrlParams;
+
 /* Nan/NDP Capabilites info */
 typedef struct {
     u32 max_concurrent_nan_clusters;
@@ -235,6 +278,7 @@ typedef struct {
     u32 max_ndp_sessions;
     u32 max_app_info_len;
     u32 max_queued_transmit_followup_msgs;
+    u32 cipher_suites_supported;
 } NanCapabilities;
 
 /*
@@ -591,6 +635,31 @@ typedef struct {
 } NanReceivePostDiscovery;
 
 /*
+   NAN device level configuration of SDF and Sync beacons in both
+   2.4/5GHz bands
+*/
+typedef struct {
+    /* Configure 2.4GHz DW Band */
+    u8 config_2dot4g_dw_band;
+    /*
+       Indicates the interval for Sync beacons and SDF's in 2.4GHz band.
+       Valid values of DW Interval are: 1, 2, 3, 4 and 5, 0 is reserved.
+       The SDF includes in OTA when enabled. The publish/subscribe period
+       values don't override the device level configurations.
+    */
+    u32 dw_2dot4g_interval_val;
+    /* Configure 5GHz DW Band */
+    u8 config_5g_dw_band;
+    /*
+       Indicates the interval for Sync beacons and SDF's in 5GHz band
+       Valid values of DW Interval are: 1, 2, 3, 4 and 5, 0 no wake up for
+       any interval. The SDF includes in OTA when enabled. The publish/subscribe
+       period values don't override the device level configurations.
+    */
+    u32 dw_5g_interval_val;
+} NanConfigDW;
+
+/*
   Enable Request Message Structure
   The NanEnableReq message instructs the Discovery Engine to enter an operational state
 */
@@ -750,6 +819,17 @@ typedef struct {
 
     u8 config_5g_channel;
     wifi_channel channel_5g_val;
+
+    /* Configure 2.4/5GHz DW */
+    NanConfigDW config_dw;
+
+    /*
+       By default discovery MAC address randomization is enabled
+       and default interval value is 30 minutes i.e. 1800 seconds.
+       The value 0 is used to disable MAC addr randomization.
+    */
+    u8 config_disc_mac_addr_randomization;
+    u16 disc_mac_addr_rand_interval_sec;
 } NanEnableRequest;
 
 /*
@@ -760,7 +840,15 @@ typedef struct {
 typedef struct {
     u16 publish_id;/* id  0 means new publish, any other id is existing publish */
     u16 ttl; /* how many seconds to run for. 0 means forever until canceled */
-    u16 period; /* periodicity of OTA unsolicited publish. Specified in increments of 500 ms */
+    /*
+       period: Awake DW Interval for publish(service)
+       Indicates the interval between two Discovery Windows in which
+       the device supporting the service is awake to transmit or
+       receive the Service Discovery frames.
+       Valid values of Awake DW Interval are: 1, 2, 4, 8 and 16, value 0 will
+       default to 1.
+    */
+    u16 period;
     NanPublishType publish_type;/* 0= unsolicited, solicited = 1, 2= both */
     NanTxType tx_type; /* 0 = broadcast, 1= unicast  if solicited publish */
     u8 publish_count; /* number of OTA Publish, 0 means forever until canceled */
@@ -832,6 +920,30 @@ typedef struct {
       Nan accept policy for the specific service(publish)
     */
     NanServiceAcceptPolicy service_responder_policy;
+    /* NAN Cipher Suite Type */
+    u32 cipher_type;
+    /* pmk length */
+    u8 pmk_len;
+    /*
+       PMK: Info is optional in Discovery phase. PMK info can be passed during
+       the NDP session.
+     */
+    u8 pmk[NAN_PMK_INFO_LEN];
+
+    /* Security Context Identifiers length */
+    u32 scid_len;
+    /*
+       Security Context Identifier attribute contains PMKID
+       shall be included in NDP setup and response messages.
+       Security Context Identifier, Identifies the Security
+       Context. For NAN Shared Key Cipher Suite, this field
+       contains the 16 octet PMKID identifying the PMK used
+       for setting up the Secure Data Path.
+    */
+    u8 scid[NAN_MAX_SCID_BUF_LEN];
+
+    /* NAN configure service discovery extended attributes */
+    NanSdeaCtrlParams sdea_params;
 } NanPublishRequest;
 
 /*
@@ -851,7 +963,15 @@ typedef struct {
 typedef struct {
     u16 subscribe_id; /* id 0 means new subscribe, non zero is existing subscribe */
     u16 ttl; /* how many seconds to run for. 0 means forever until canceled */
-    u16 period;/* periodicity of OTA Active Subscribe. Units in increments of 500 ms , 0 = attempt every DW*/
+    /*
+       period: Awake DW Interval for subscribe(service)
+       Indicates the interval between two Discovery Windows in which
+       the device supporting the service is awake to transmit or
+       receive the Service Discovery frames.
+       Valid values of Awake DW Interval are: 1, 2, 4, 8 and 16, value 0 will
+       default to 1.
+    */
+    u16 period;
 
     /* Flag which specifies how the Subscribe request shall be processed. */
     NanSubscribeType subscribe_type; /* 0 - PASSIVE , 1- ACTIVE */
@@ -944,6 +1064,31 @@ typedef struct {
       BIT2 - Disable followUp indication received (OTA).
     */
     u8 recv_indication_cfg;
+
+    /* NAN Cipher Suite Type */
+    u32 cipher_type;
+    /* pmk length */
+    u8 pmk_len;
+    /*
+       PMK: Info is optional in Discovery phase. PMK info can be passed during
+       the NDP session.
+    */
+    u8 pmk[NAN_PMK_INFO_LEN];
+
+    /* Security Context Identifiers length */
+    u32 scid_len;
+    /*
+       Security Context Identifier attribute contains PMKID
+       shall be included in NDP setup and response messages.
+       Security Context Identifier, Identifies the Security
+       Context. For NAN Shared Key Cipher Suite, this field
+       contains the 16 octet PMKID identifying the PMK used
+       for setting up the Secure Data Path.
+    */
+    u8 scid[NAN_MAX_SCID_BUF_LEN];
+
+    /* NAN configure service discovery extended attributes */
+    NanSdeaCtrlParams sdea_params;
 } NanSubscribeRequest;
 
 /*
@@ -1063,6 +1208,15 @@ typedef struct {
     /* NAN Further availability Map */
     u8 config_fam;
     NanFurtherAvailabilityMap fam_val;
+    /* Configure 2.4/5GHz DW */
+    NanConfigDW config_dw;
+    /*
+       By default discovery MAC address randomization is enabled
+       and default interval value is 30 minutes i.e. 1800 seconds.
+       The value 0 is used to disable MAC addr randomization.
+    */
+    u8 config_disc_mac_addr_randomization;
+    u16 disc_mac_addr_rand_interval_sec;
 } NanConfigRequest;
 
 /*
@@ -1252,6 +1406,7 @@ typedef struct
     u32 discBeaconTxAttempts;
     u32 discBeaconTxFailures;
     u32 amHopCountExpireCount;
+    u32 ndpChannelFreq;
 } NanSyncStats;
 
 /* NAN Misc DE Statistics */
@@ -1426,6 +1581,24 @@ typedef struct {
     /* NAN Cluster Attribute */
     u8 cluster_attribute_len;
     u8 cluster_attribute[NAN_MAX_CLUSTER_ATTRIBUTE_LEN];
+
+    /* NAN Cipher Suite */
+    u32 peer_cipher_type;
+
+    /* Security Context Identifiers length */
+    u32 scid_len;
+    /*
+       Security Context Identifier attribute contains PMKID
+       shall be included in NDP setup and response messages.
+       Security Context Identifier, Identifies the Security
+       Context. For NAN Shared Key Cipher Suite, this field
+       contains the 16 octet PMKID identifying the PMK used
+       for setting up the Secure Data Path.
+    */
+    u8 scid[NAN_MAX_SCID_BUF_LEN];
+
+    /* Peer service discovery extended attributes */
+    NanSdeaCtrlParams peer_sdea_params;
 } NanMatchInd;
 
 /*
@@ -1660,6 +1833,13 @@ typedef struct {
     NanDataPathCfg ndp_cfg;
     /* App/Service information of the Initiator */
     NanDataPathAppInfo app_info;
+
+    /* NAN Cipher Suite Type */
+    u32 cipher_type;
+    /* pmk length */
+    u8 pmk_len;
+    /* PMK */
+    u8 pmk[NAN_PMK_INFO_LEN];
 } NanDataPathInitiatorRequest;
 
 /*
@@ -1684,6 +1864,13 @@ typedef struct {
     NanDataPathAppInfo app_info;
     /* Response Code indicating ACCEPT/REJECT/DEFER */
     NanDataPathResponseCode rsp_code;
+
+    /* NAN Cipher Suite Type */
+    u32 cipher_type;
+    /* pmk length */
+    u8 pmk_len;
+    /* PMK */
+    u8 pmk[NAN_PMK_INFO_LEN];
 } NanDataPathIndicationResponse;
 
 /* NDP termination info */
