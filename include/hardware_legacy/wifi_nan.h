@@ -1252,6 +1252,7 @@ typedef struct
     u32 discBeaconTxAttempts;
     u32 discBeaconTxFailures;
     u32 amHopCountExpireCount;
+    u32 ndpChannelFreq;
 } NanSyncStats;
 
 /* NAN Misc DE Statistics */
