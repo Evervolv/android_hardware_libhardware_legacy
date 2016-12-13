@@ -785,6 +785,14 @@ typedef struct {
 
     /* Configure 2.4/5GHz DW */
     NanConfigDW config_dw;
+
+    /*
+       By default discovery MAC address randomization is enabled
+       and default interval value is 30 minutes i.e. 1800 seconds.
+       The value 0 is used to disable MAC addr randomization.
+    */
+    u8 config_disc_mac_addr_randomization;
+    u16 disc_mac_addr_rand_interval_sec;
 } NanEnableRequest;
 
 /*
@@ -1165,6 +1173,13 @@ typedef struct {
     NanFurtherAvailabilityMap fam_val;
     /* Configure 2.4/5GHz DW */
     NanConfigDW config_dw;
+    /*
+       By default discovery MAC address randomization is enabled
+       and default interval value is 30 minutes i.e. 1800 seconds.
+       The value 0 is used to disable MAC addr randomization.
+    */
+    u8 config_disc_mac_addr_randomization;
+    u16 disc_mac_addr_rand_interval_sec;
 } NanConfigRequest;
 
 /*
