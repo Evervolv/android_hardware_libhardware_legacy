@@ -150,20 +150,18 @@ typedef enum {
     NAN_STATUS_INVALID_PARAM = 5,
     /*  if the requestor instance id is invalid */
     NAN_STATUS_INVALID_REQUESTOR_INSTANCE_ID = 6,
-    /*  if the service instance id is invalid */
-    NAN_STATUS_INVALID_SERVICE_INSTANCE_ID = 7,
     /*  if the ndp id is invalid */
-    NAN_STATUS_INVALID_NDP_ID = 8,
+    NAN_STATUS_INVALID_NDP_ID = 7,
     /* if NAN is enabled when wifi is turned off */
-    NAN_STATUS_NAN_NOT_ALLOWED = 9,
+    NAN_STATUS_NAN_NOT_ALLOWED = 8,
     /* if over the air ack is not received */
-    NAN_STATUS_NO_OTA_ACK = 10,
+    NAN_STATUS_NO_OTA_ACK = 9,
     /* If NAN is already enabled and we are try to re-enable the same */
-    NAN_STATUS_ALREADY_ENABLED = 11,
+    NAN_STATUS_ALREADY_ENABLED = 10,
     /* If followup message internal queue is full */
-    NAN_STATUS_FOLLOWUP_QUEUE_FULL = 12,
+    NAN_STATUS_FOLLOWUP_QUEUE_FULL = 11,
     /* Unsupported concurrency session enabled, NAN disabled notified */
-    NAN_STATUS_UNSUPPORTED_CONCURRENCY_NAN_DISABLED = 13
+    NAN_STATUS_UNSUPPORTED_CONCURRENCY_NAN_DISABLED = 12
 } NanStatusType;
 
 /* NAN Transmit Types */
@@ -882,6 +880,14 @@ typedef struct {
     /* Enable NAN device Ranging response mode */
     u8 config_responder_auto_response;
     NanRangingAutoResponseCfg ranging_auto_response_cfg;
+
+    /*
+      Set/Enable corresponding bits to disable Discovery indications:
+      BIT0 - Disable Discovery MAC Address Event.
+      BIT1 - Disable Started Cluster Event.
+      BIT2 - Disable Joined Cluster Event.
+    */
+    u8 discovery_indication_cfg;
 } NanEnableRequest;
 
 /*
@@ -1278,6 +1284,14 @@ typedef struct {
     /* Config NAN device Ranging response mode */
     u8 config_responder_auto_response;
     NanRangingAutoResponseCfg ranging_auto_response_cfg;
+
+    /*
+      Set/Enable corresponding bits to disable Discovery indications:
+      BIT0 - Disable Discovery MAC Address Event.
+      BIT1 - Disable Started Cluster Event.
+      BIT2 - Disable Joined Cluster Event.
+    */
+    u8 discovery_indication_cfg;
 } NanConfigRequest;
 
 /*
@@ -1897,7 +1911,7 @@ typedef struct {
      This is same as publish_id notified on the subscribe side
      in a publish/subscribe scenario
     */
-    u32 service_instance_id; /* Value 0 for no publish/subscribe */
+    u32 requestor_instance_id; /* Value 0 for no publish/subscribe */
 
     /* Config flag for channel request */
     NanDataPathChannelCfg channel_request_type;
@@ -2306,7 +2320,7 @@ wifi_error nan_data_interface_delete(transaction_id id,
  *                      NAN_STATUS_INVALID_PARAM
  *                      NAN_STATUS_INTERNAL_FAILURE
  *                      NAN_STATUS_PROTOCOL_FAILURE
- *                      NAN_STATUS_INVALID_SERVICE_INSTANCE_ID
+ *                      NAN_STATUS_INVALID_REQUESTOR_INSTANCE_ID
  */
 wifi_error nan_data_request_initiator(transaction_id id,
                                       wifi_interface_handle iface,
