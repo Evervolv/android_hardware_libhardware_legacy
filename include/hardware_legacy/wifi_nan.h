@@ -882,6 +882,14 @@ typedef struct {
     /* Enable NAN device Ranging response mode */
     u8 config_responder_auto_response;
     NanRangingAutoResponseCfg ranging_auto_response_cfg;
+
+    /*
+      Set/Enable corresponding bits to disable Discovery indications:
+      BIT0 - Disable Discovery MAC Address Event.
+      BIT1 - Disable Started Cluster Event.
+      BIT2 - Disable Joined Cluster Event.
+    */
+    u8 discovery_indication_cfg;
 } NanEnableRequest;
 
 /*
@@ -1278,6 +1286,14 @@ typedef struct {
     /* Config NAN device Ranging response mode */
     u8 config_responder_auto_response;
     NanRangingAutoResponseCfg ranging_auto_response_cfg;
+
+    /*
+      Set/Enable corresponding bits to disable Discovery indications:
+      BIT0 - Disable Discovery MAC Address Event.
+      BIT1 - Disable Started Cluster Event.
+      BIT2 - Disable Joined Cluster Event.
+    */
+    u8 discovery_indication_cfg;
 } NanConfigRequest;
 
 /*
