@@ -1553,7 +1553,6 @@ typedef struct {
 typedef struct {
     NanStatusType status; /* contains the result code */
     char nan_error[NAN_ERROR_STR_LEN]; /* Describe the NAN error type */
-    u32 value; /* Deprecated - do not use */
     NanResponseType response_type; /* NanResponseType Definitions */
     union {
         NanPublishResponse publish_response;
