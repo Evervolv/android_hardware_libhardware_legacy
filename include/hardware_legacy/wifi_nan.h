@@ -301,6 +301,7 @@ typedef struct {
     u32 max_app_info_len;
     u32 max_queued_transmit_followup_msgs;
     u32 cipher_suites_supported;
+    u32 max_subscribe_address;
 } NanCapabilities;
 
 /*
@@ -396,14 +397,14 @@ typedef struct {
        NanChannelIndex corresponds to the respective channel
        If time set to 0 then the FW default time will be used.
     */
-    u8 dwell_time[NAN_MAX_SOCIAL_CHANNELS];
+    u8 dwell_time[NAN_MAX_SOCIAL_CHANNELS]; // default value 200 msec
 
     /*
        Scan period of each social channel in seconds
        NanChannelIndex corresponds to the respective channel
        If time set to 0 then the FW default time will be used.
     */
-    u16 scan_period[NAN_MAX_SOCIAL_CHANNELS];
+    u16 scan_period[NAN_MAX_SOCIAL_CHANNELS]; // default value 20 sec
 } NanSocialChannelScanParams;
 
 /*
@@ -693,7 +694,7 @@ typedef struct {
        The SDF includes in OTA when enabled. The publish/subscribe period
        values don't override the device level configurations.
     */
-    u32 dw_2dot4g_interval_val;
+    u32 dw_2dot4g_interval_val; // default value 1
     /* Configure 5GHz DW Band */
     u8 config_5g_dw_band;
     /*
@@ -702,7 +703,7 @@ typedef struct {
        any interval. The SDF includes in OTA when enabled. The publish/subscribe
        period values don't override the device level configurations.
     */
-    u32 dw_5g_interval_val;
+    u32 dw_5g_interval_val; // default value 1 when 5G is enabled
 } NanConfigDW;
 
 /*
@@ -711,14 +712,14 @@ typedef struct {
 */
 typedef struct {
     /* Mandatory parameters below */
-    u8 master_pref;
+    u8 master_pref; // default value 0x02
     /*
       A cluster_low value matching cluster_high indicates a request to join
       a cluster with that value. If the requested cluster is not found the
       device will start its own cluster.
     */
-    u16 cluster_low;
-    u16 cluster_high;
+    u16 cluster_low; // default value 0
+    u16 cluster_high; // default value 0xFFFF
 
     /*
       Optional configuration of Enable request.
@@ -726,7 +727,7 @@ typedef struct {
       determine whether configuration is to be passed or not.
     */
     u8 config_support_5g;
-    u8 support_5g_val;
+    u8 support_5g_val; // default value 0; turned off by default
     /*
        BIT 0 is used to specify to include Service IDs in Sync/Discovery beacons
        0 - Do not include SIDs in any beacons
@@ -736,22 +737,22 @@ typedef struct {
        the maximum allow Beacon frame size
     */
     u8 config_sid_beacon;
-    u8 sid_beacon_val;
+    u8 sid_beacon_val; // default value 0x01
     /*
        The rssi values below should be specified without sign.
        For eg: -70dBm should be specified as 70.
     */
     u8 config_2dot4g_rssi_close;
-    u8 rssi_close_2dot4g_val;
+    u8 rssi_close_2dot4g_val;    // default value -60 dBm
 
     u8 config_2dot4g_rssi_middle;
-    u8 rssi_middle_2dot4g_val;
+    u8 rssi_middle_2dot4g_val;    // default value -70 dBm
 
     u8 config_2dot4g_rssi_proximity;
-    u8 rssi_proximity_2dot4g_val;
+    u8 rssi_proximity_2dot4g_val;//  default value -60dBm
 
     u8 config_hop_count_limit;
-    u8 hop_count_limit_val;
+    u8 hop_count_limit_val; //  default value 0x02
 
     /*
        Defines 2.4G channel access support
@@ -759,35 +760,35 @@ typedef struct {
        1 - Supported
     */
     u8 config_2dot4g_support;
-    u8 support_2dot4g_val;
+    u8 support_2dot4g_val; // default value 0x01
     /*
        Defines 2.4G channels will be used for sync/discovery beacons
        0 - 2.4G channels not used for beacons
        1 - 2.4G channels used for beacons
     */
     u8 config_2dot4g_beacons;
-    u8 beacon_2dot4g_val;
+    u8 beacon_2dot4g_val; // default value 1
     /*
        Defines 2.4G channels will be used for Service Discovery frames
        0 - 2.4G channels not used for Service Discovery frames
        1 - 2.4G channels used for Service Discovery frames
     */
     u8 config_2dot4g_sdf;
-    u8 sdf_2dot4g_val;
+    u8 sdf_2dot4g_val; // default value 1
     /*
        Defines 5G channels will be used for sync/discovery beacons
        0 - 5G channels not used for beacons
        1 - 5G channels used for beacons
     */
     u8 config_5g_beacons;
-    u8 beacon_5g_val;
+    u8 beacon_5g_val; // default value 1 when 5G is enabled
     /*
        Defines 5G channels will be used for Service Discovery frames
        0 - 5G channels not used for Service Discovery frames
        1 - 5G channels used for Service Discovery frames
     */
     u8 config_5g_sdf;
-    u8 sdf_5g_val;
+    u8 sdf_5g_val; // default value is 0 when 5G is enabled
     /*
        1 byte value which defines the RSSI in
        dBm for a close by Peer in 5 Ghz channels.
@@ -795,16 +796,15 @@ typedef struct {
        For eg: -70dBm should be specified as 70.
     */
     u8 config_5g_rssi_close;
-    u8 rssi_close_5g_val;
+    u8 rssi_close_5g_val; // default value -60dBm when 5G is enabled
     /*
        1 byte value which defines the RSSI value in
        dBm for a close by Peer in 5 Ghz channels.
        The rssi values should be specified without sign.
        For eg: -70dBm should be specified as 70.
-
     */
     u8 config_5g_rssi_middle;
-    u8 rssi_middle_5g_val;
+    u8 rssi_middle_5g_val; // default value -75dBm when 5G is enabled
     /*
        1 byte value which defines the RSSI filter
        threshold.  Any Service Descriptors received above this
@@ -813,18 +813,18 @@ typedef struct {
        For eg: -70dBm should be specified as 70.
     */
     u8 config_5g_rssi_close_proximity;
-    u8 rssi_close_proximity_5g_val;
+    u8 rssi_close_proximity_5g_val; // default value -60dBm when 5G is enabled
     /*
        1 byte quantity which defines the window size over
        which the “average RSSI” will be calculated over.
     */
     u8 config_rssi_window_size;
-    u8 rssi_window_size_val;
+    u8 rssi_window_size_val; // default value 0x08
     /*
        The 24 bit Organizationally Unique ID + the 8 bit Network Id.
     */
     u8 config_oui;
-    u32 oui_val;
+    u32 oui_val; // default value {0x51, 0x6F, 0x9A, 0x01, 0x00, 0x00}
     /*
        NAN Interface Address, If not configured the Discovery Engine
        will generate a 6 byte Random MAC.
@@ -850,22 +850,22 @@ typedef struct {
        value for all transmitted Sync/Discovery beacons
     */
     u8 config_random_factor_force;
-    u8 random_factor_force_val;
+    u8 random_factor_force_val; // default value off and set to 0x00
     /*
        1 byte quantity which forces the HC for all transmitted Sync and
        Discovery Beacon NO matter the real HC being received over the
        air.
     */
     u8 config_hop_count_force;
-    u8 hop_count_force_val;
+    u8 hop_count_force_val; // default value 0x00
 
     /* channel frequency in MHz to enable Nan on */
     u8 config_24g_channel;
-    wifi_channel channel_24g_val;
+    wifi_channel channel_24g_val; // default value channel 0x6
 
     u8 config_5g_channel;
-    wifi_channel channel_5g_val;
-
+    wifi_channel channel_5g_val; // default value channel 44 or 149 regulatory
+                                 // domain
     /* Configure 2.4/5GHz DW */
     NanConfigDW config_dw;
 
@@ -875,11 +875,11 @@ typedef struct {
        The value 0 is used to disable MAC addr randomization.
     */
     u8 config_disc_mac_addr_randomization;
-    u32 disc_mac_addr_rand_interval_sec;
+    u32 disc_mac_addr_rand_interval_sec; // default value 1800 sec
 
     /* Enable NAN device Ranging response mode */
     u8 config_responder_auto_response;
-    NanRangingAutoResponseCfg ranging_auto_response_cfg;
+    NanRangingAutoResponseCfg ranging_auto_response_cfg; // default value 0
 
     /*
       Set/Enable corresponding bits to disable Discovery indications:
@@ -887,7 +887,7 @@ typedef struct {
       BIT1 - Disable Started Cluster Event.
       BIT2 - Disable Joined Cluster Event.
     */
-    u8 discovery_indication_cfg;
+    u8 discovery_indication_cfg;  // default value 0x0
 } NanEnableRequest;
 
 /*
@@ -1213,9 +1213,9 @@ typedef struct {
     u8 config_sid_beacon;
     u8 sid_beacon;
     u8 config_rssi_proximity;
-    u8 rssi_proximity;
+    u8 rssi_proximity; // default value -60dBm
     u8 config_master_pref;
-    u8 master_pref;
+    u8 master_pref; // default value 0x02
     /*
        1 byte value which defines the RSSI filter threshold.
        Any Service Descriptors received above this value
@@ -1224,7 +1224,7 @@ typedef struct {
        For eg: -70dBm should be specified as 70.
     */
     u8 config_5g_rssi_close_proximity;
-    u8 rssi_close_proximity_5g_val;
+    u8 rssi_close_proximity_5g_val;  // default value -60dBm
     /*
       Optional configuration of Configure request.
       Each of the optional parameters have configure flag which
@@ -1235,7 +1235,7 @@ typedef struct {
        which the “average RSSI” will be calculated over.
     */
     u8 config_rssi_window_size;
-    u16 rssi_window_size_val;
+    u16 rssi_window_size_val; // default value 0x08
     /*
        If set to 1, the Discovery Engine will enclose the Cluster
        Attribute only sent in Beacons in a Vendor Specific Attribute
@@ -1255,14 +1255,14 @@ typedef struct {
        value for all transmitted Sync/Discovery beacons
     */
     u8 config_random_factor_force;
-    u8 random_factor_force_val;
+    u8 random_factor_force_val; // default value 0x00
     /*
        1 byte quantity which forces the HC for all transmitted Sync and
        Discovery Beacon NO matter the real HC being received over the
        air.
     */
     u8 config_hop_count_force;
-    u8 hop_count_force_val;
+    u8 hop_count_force_val; // default value of 0
     /* NAN Post Connectivity Capability */
     u8 config_conn_capability;
     NanTransmitPostConnectivityCapability conn_capability_val;
@@ -1280,7 +1280,7 @@ typedef struct {
        The value 0 is used to disable MAC addr randomization.
     */
     u8 config_disc_mac_addr_randomization;
-    u32 disc_mac_addr_rand_interval_sec;
+    u32 disc_mac_addr_rand_interval_sec; // default value of 30 minutes
     /* Config NAN device Ranging response mode */
     u8 config_responder_auto_response;
     NanRangingAutoResponseCfg ranging_auto_response_cfg;
@@ -1291,7 +1291,7 @@ typedef struct {
       BIT1 - Disable Started Cluster Event.
       BIT2 - Disable Joined Cluster Event.
     */
-    u8 discovery_indication_cfg;
+    u8 discovery_indication_cfg; // default value of 0
 } NanConfigRequest;
 
 /*
@@ -2025,7 +2025,11 @@ typedef struct {
     NanDataPathAppInfo app_info;
     /* Response code indicating ACCEPT/REJECT/DEFER */
     NanDataPathResponseCode rsp_code;
-    /* Reason code indicating the cause for REJECT */
+    /*
+      Reason code indicating the cause for REJECT.
+      NAN_STATUS_SUCCESS and NAN_STATUS_PROTOCOL_FAILURE are
+      expected reason codes.
+    */
     NanStatusType reason_code;
 } NanDataPathConfirmInd;
 
