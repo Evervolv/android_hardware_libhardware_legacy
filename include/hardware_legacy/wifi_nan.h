@@ -1874,8 +1874,9 @@ typedef struct {
    transaction_id id;
    /*
      Following reason codes returned:
+     NAN_STATUS_SUCCESS
      NAN_STATUS_NO_OTA_ACK
-     NAN_STATUS_FOLLOWUP_QUEUE_FULL
+     NAN_STATUS_PROTOCOL_FAILURE
    */
    NanStatusType reason;
    char nan_reason[NAN_ERROR_STR_LEN]; /* Describe the NAN reason type */
@@ -2178,8 +2179,10 @@ wifi_error nan_subscribe_cancel_request(transaction_id id,
  *                      NAN_STATUS_INTERNAL_FAILURE
  *                      NAN_STATUS_INVALID_PUBLISH_SUBSCRIBE_ID
  *                      NAN_STATUS_INVALID_REQUESTOR_INSTANCE_ID
- * @return Asynchronous TransmitFollowupInd CB return
  *                      NAN_STATUS_FOLLOWUP_QUEUE_FULL
+ * @return Asynchronous TransmitFollowupInd CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_PROTOCOL_FAILURE
  *                      NAN_STATUS_NO_OTA_ACK
  */
 wifi_error nan_transmit_followup_request(transaction_id id,
