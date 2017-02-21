@@ -232,11 +232,24 @@ typedef enum {
     NAN_DP_FORCE_CHANNEL_SETUP
 } NanDataPathChannelCfg;
 
-/* NAN Ranging Auto response configuration */
+/* Enable/Disable NAN Ranging Auto response */
 typedef enum {
-    NAN_RANGING_AUTO_RESPONSE_ENABLE = 0,
+    NAN_RANGING_AUTO_RESPONSE_ENABLE = 1,
     NAN_RANGING_AUTO_RESPONSE_DISABLE
-} NanRangingAutoResponseCfg;
+} NanRangingAutoResponse;
+
+/* Enable/Disable NAN service range report */
+typedef enum {
+    NAN_DISABLE_RANGE_REPORT = 1,
+    NAN_ENABLE_RANGE_REPORT
+} NanRangeReport;
+
+/* NAN Range Response */
+typedef enum {
+    NAN_RANGE_REQUEST_ACCEPT = 1,
+    NAN_RANGE_REQUEST_REJECT,
+    NAN_RANGE_REQUEST_CANCEL
+} NanRangeResponse;
 
 /* NAN Shared Key Security Cipher Suites Mask */
 #define NAN_CIPHER_SUITE_SHARED_KEY_NONE 0x00
@@ -274,7 +287,7 @@ typedef struct {
 } NanSdeaCtrlParams;
 
 /*
-   Nan Ranging Result indicating structure
+   Nan Ranging Peer Info in MatchInd
 */
 typedef struct {
     /*
@@ -284,7 +297,7 @@ typedef struct {
     u32 range_measurement_cm;
     /* Ranging event matching the configuration of continuous/ingress/egress. */
     u32 ranging_event_type;
-} NanRangeResult;
+} NanRangeInfo;
 
 /* Nan/NDP Capabilites info */
 typedef struct {
@@ -574,6 +587,21 @@ typedef struct {
     /* Egress distance in centimeters (optional) */
     u32 distance_egress_cm;
 } NanRangingCfg;
+
+/* NAN Ranging request's response */
+typedef struct {
+    /* Publish Id of an earlier Publisher */
+    u16 publish_id;
+    /*
+       A 32 bit Requestor instance Id which is sent to the Application.
+       This Id will be used in subsequent RangeResponse on Subscribe side.
+    */
+    u32 requestor_instance_id;
+    /* Peer MAC addr of Range Requestor */
+    u8 peer_addr[NAN_MAC_ADDR_LEN];
+    /* Response indicating ACCEPT/REJECT/CANCEL of Range Request */
+    NanRangeResponse ranging_response;
+} NanRangeResponseCfg;
 
 /* Structure of Post NAN Discovery attribute */
 typedef struct {
@@ -878,10 +906,6 @@ typedef struct {
     u8 config_disc_mac_addr_randomization;
     u32 disc_mac_addr_rand_interval_sec; // default value 1800 sec
 
-    /* Enable NAN device Ranging response mode */
-    u8 config_responder_auto_response;
-    NanRangingAutoResponseCfg ranging_auto_response_cfg; // default value 0
-
     /*
       Set/Enable corresponding bits to disable Discovery indications:
       BIT0 - Disable Discovery MAC Address Event.
@@ -1006,6 +1030,19 @@ typedef struct {
 
     /* NAN Ranging configuration */
     NanRangingCfg ranging_cfg;
+
+    /* Enable/disable NAN serivce Ranging auto response mode */
+    NanRangingAutoResponse ranging_auto_response;
+
+    /* Enable/Disable Ranging report, when configured NanRangeReportInd received */
+    NanRangeReport range_report;
+
+    /*
+      When the ranging_auto_response_cfg is not set, NanRangeRequestInd is
+      received. Nan Range Response to Peer MAC Addr is notified to indicate
+      ACCEPT/REJECT/CANCEL to the requestor.
+    */
+    NanRangeResponseCfg range_response_cfg;
 } NanPublishRequest;
 
 /*
@@ -1154,6 +1191,19 @@ typedef struct {
 
     /* NAN Ranging configuration */
     NanRangingCfg ranging_cfg;
+
+    /* Enable/disable NAN serivce Ranging auto response mode */
+    NanRangingAutoResponse ranging_auto_response;
+
+    /* Enable/Disable Ranging report, when configured NanRangeReportInd received */
+    NanRangeReport range_report;
+
+    /*
+      When the ranging_auto_response_cfg is not set, NanRangeRequestInd is
+      received. Nan Range Response to Peer MAC Addr is notified to indicate
+      ACCEPT/REJECT/CANCEL to the requestor.
+    */
+    NanRangeResponseCfg range_response_cfg;
 } NanSubscribeRequest;
 
 /*
@@ -1282,9 +1332,6 @@ typedef struct {
     */
     u8 config_disc_mac_addr_randomization;
     u32 disc_mac_addr_rand_interval_sec; // default value of 30 minutes
-    /* Config NAN device Ranging response mode */
-    u8 config_responder_auto_response;
-    NanRangingAutoResponseCfg ranging_auto_response_cfg;
 
     /*
       Set/Enable corresponding bits to disable Discovery indications:
@@ -1691,12 +1738,12 @@ typedef struct {
          priority is given to the device DW intervalsi.
     */
     /*
-      Range Result includes:
+      Range Info includes:
       1) distance to the NAN device with the MAC address indicated
          with ranged mac address.
       2) Ranging event matching the configuration of continuous/ingress/egress.
     */
-    NanRangeResult range_result;
+    NanRangeInfo range_info;
 } NanMatchInd;
 
 /*
@@ -2048,6 +2095,31 @@ typedef struct {
     NanDataPathId ndp_instance_id[];
 } NanDataPathEndInd;
 
+/*
+  Event indicating Range Request received on the
+  Published side.
+*/
+typedef struct {
+    u16 publish_id;/* id is existing publish */
+    /* Range Requestor's MAC address */
+    u8 range_req_intf_addr[NAN_MAC_ADDR_LEN];
+} NanRangeRequestInd;
+
+/*
+  Event indicating Range report on the
+  Published side.
+*/
+typedef struct {
+    u16 publish_id;/* id is existing publish */
+    /* Range Requestor's MAC address */
+    u8 range_req_intf_addr[NAN_MAC_ADDR_LEN];
+    /*
+       Distance to the NAN device with the MAC address indicated
+       with ranged mac address.
+    */
+    u32 range_measurement_cm;
+} NanRangeReportInd;
+
 /* Response and Event Callbacks */
 typedef struct {
     /* NotifyResponse invoked to notify the status of the Request */
@@ -2066,6 +2138,8 @@ typedef struct {
     void (*EventDataConfirm)(NanDataPathConfirmInd* event);
     void (*EventDataEnd)(NanDataPathEndInd* event);
     void (*EventTransmitFollowup) (NanTransmitFollowupInd* event);
+    void (*EventRangeRequest) (NanRangeRequestInd* event);
+    void (*EventRangeReport) (NanRangeReportInd* event);
 } NanCallbackHandler;
 
 /**@brief nan_enable_request
