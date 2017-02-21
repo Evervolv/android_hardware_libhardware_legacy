@@ -60,6 +60,7 @@ typedef u32 NanDataPathId;
 #define NAN_ERROR_STR_LEN                       255
 #define NAN_PMK_INFO_LEN                        32
 #define NAN_MAX_SCID_BUF_LEN                    1024
+#define NAN_MAX_SDEA_SERVICE_SPECIFIC_INFO_LEN  1024
 
 /*
   Definition of various NanResponseType
@@ -316,6 +317,7 @@ typedef struct {
     u32 max_queued_transmit_followup_msgs;
     u32 cipher_suites_supported;
     u32 max_subscribe_address;
+    u32 max_sdea_service_specific_info_len;
 } NanCapabilities;
 
 /*
@@ -1043,6 +1045,12 @@ typedef struct {
       ACCEPT/REJECT/CANCEL to the requestor.
     */
     NanRangeResponseCfg range_response_cfg;
+
+    /*
+       Sequence of values indicating the service specific info in SDEA
+    */
+    u16 sdea_service_specific_info_len;
+    u8 sdea_service_specific_info[NAN_MAX_SDEA_SERVICE_SPECIFIC_INFO_LEN];
 } NanPublishRequest;
 
 /*
@@ -1204,6 +1212,12 @@ typedef struct {
       ACCEPT/REJECT/CANCEL to the requestor.
     */
     NanRangeResponseCfg range_response_cfg;
+
+    /*
+       Sequence of values indicating the service specific info in SDEA
+    */
+    u16 sdea_service_specific_info_len;
+    u8 sdea_service_specific_info[NAN_MAX_SDEA_SERVICE_SPECIFIC_INFO_LEN];
 } NanSubscribeRequest;
 
 /*
@@ -1243,6 +1257,12 @@ typedef struct {
       BIT0 - Disable followUp response from FW.
     */
     u8 recv_indication_cfg;
+
+    /*
+       Sequence of values indicating the service specific info in SDEA
+    */
+    u16 sdea_service_specific_info_len;
+    u8 sdea_service_specific_info[NAN_MAX_SDEA_SERVICE_SPECIFIC_INFO_LEN];
 } NanTransmitFollowupRequest;
 
 /*
@@ -1744,6 +1764,12 @@ typedef struct {
       2) Ranging event matching the configuration of continuous/ingress/egress.
     */
     NanRangeInfo range_info;
+
+    /*
+       Sequence of values indicating the service specific info in SDEA
+    */
+    u16 sdea_service_specific_info_len;
+    u8 sdea_service_specific_info[NAN_MAX_SDEA_SERVICE_SPECIFIC_INFO_LEN];
 } NanMatchInd;
 
 /*
@@ -1803,6 +1829,12 @@ typedef struct {
     */
     u16 service_specific_info_len;
     u8 service_specific_info[NAN_MAX_SERVICE_SPECIFIC_INFO_LEN];
+
+    /*
+       Sequence of values indicating the service specific info in SDEA
+    */
+    u16 sdea_service_specific_info_len;
+    u8 sdea_service_specific_info[NAN_MAX_SDEA_SERVICE_SPECIFIC_INFO_LEN];
 } NanFollowupInd;
 
 /*
