@@ -239,6 +239,7 @@ typedef enum {
 } NanRangingAutoResponseCfg;
 
 /* NAN Shared Key Security Cipher Suites Mask */
+#define NAN_CIPHER_SUITE_SHARED_KEY_NONE 0x00
 #define NAN_CIPHER_SUITE_SHARED_KEY_128_MASK  0x01
 #define NAN_CIPHER_SUITE_SHARED_KEY_256_MASK  0x02
 
