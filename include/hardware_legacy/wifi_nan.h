@@ -324,8 +324,8 @@ typedef struct {
   will send ACCEPT/REJECT
 */
 typedef enum {
-    /* Default value */
     NAN_SERVICE_ACCEPT_POLICY_NONE = 0,
+    /* Default value */
     NAN_SERVICE_ACCEPT_POLICY_ALL
 } NanServiceAcceptPolicy;
 
