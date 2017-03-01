@@ -142,6 +142,7 @@ wifi_error wifi_get_concurrency_matrix(wifi_interface_handle handle, int set_siz
 
 wifi_error wifi_get_ifaces(wifi_handle handle, int *num_ifaces, wifi_interface_handle **ifaces);
 wifi_error wifi_get_iface_name(wifi_interface_handle iface, char *name, size_t size);
+wifi_interface_handle wifi_get_iface_handle(wifi_handle handle, char *name);
 
 /* Configuration events */
 
