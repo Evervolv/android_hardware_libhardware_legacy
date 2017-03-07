@@ -285,6 +285,11 @@ typedef struct {
        if ranging is enabled on disabled
     */
     NanRangingState ranging_state;
+    /*
+      Enable/Disable Ranging report,
+      when configured NanRangeReportInd received
+    */
+    NanRangeReport range_report;
 } NanSdeaCtrlParams;
 
 /*
@@ -1036,9 +1041,6 @@ typedef struct {
     /* Enable/disable NAN serivce Ranging auto response mode */
     NanRangingAutoResponse ranging_auto_response;
 
-    /* Enable/Disable Ranging report, when configured NanRangeReportInd received */
-    NanRangeReport range_report;
-
     /*
       When the ranging_auto_response_cfg is not set, NanRangeRequestInd is
       received. Nan Range Response to Peer MAC Addr is notified to indicate
@@ -1202,9 +1204,6 @@ typedef struct {
 
     /* Enable/disable NAN serivce Ranging auto response mode */
     NanRangingAutoResponse ranging_auto_response;
-
-    /* Enable/Disable Ranging report, when configured NanRangeReportInd received */
-    NanRangeReport range_report;
 
     /*
       When the ranging_auto_response_cfg is not set, NanRangeRequestInd is
