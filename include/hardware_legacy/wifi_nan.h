@@ -61,6 +61,9 @@ typedef u32 NanDataPathId;
 #define NAN_PMK_INFO_LEN                        32
 #define NAN_MAX_SCID_BUF_LEN                    1024
 #define NAN_MAX_SDEA_SERVICE_SPECIFIC_INFO_LEN  1024
+#define NAN_SECURITY_MIN_PASSPHRASE_LEN         8
+#define NAN_SECURITY_MAX_PASSPHRASE_LEN         63
+
 
 /*
   Definition of various NanResponseType
@@ -251,6 +254,42 @@ typedef enum {
     NAN_RANGE_REQUEST_REJECT,
     NAN_RANGE_REQUEST_CANCEL
 } NanRangeResponse;
+
+/* NAN Security Key Input Type*/
+typedef enum {
+    NAN_SECURITY_KEY_INPUT_PMK = 1,
+    NAN_SECURITY_KEY_INPUT_PASSPHRASE
+} NanSecurityKeyInputType;
+
+typedef struct {
+    /* pmk length */
+    u32 pmk_len;
+    /*
+       PMK: Info is optional in Discovery phase.
+       PMK info can be passed during
+       the NDP session.
+     */
+    u8 pmk[NAN_PMK_INFO_LEN];
+} NanSecurityPmk;
+
+typedef struct {
+    /* passphrase length */
+    u32 passphrase_len;
+    /*
+       passphrase info is optional in Discovery phase.
+       passphrase info can be passed during
+       the NDP session.
+     */
+    u8 passphrase[NAN_SECURITY_MAX_PASSPHRASE_LEN];
+} NanSecurityPassPhrase;
+
+typedef struct {
+    NanSecurityKeyInputType key_type;
+    union {
+        NanSecurityPmk pmk_info;
+        NanSecurityPassPhrase passphrase_info;
+    } body;
+} NanSecurityKeyInfo;
 
 /* NAN Shared Key Security Cipher Suites Mask */
 #define NAN_CIPHER_SUITE_SHARED_KEY_NONE 0x00
@@ -1012,13 +1051,12 @@ typedef struct {
     NanServiceAcceptPolicy service_responder_policy;
     /* NAN Cipher Suite Type */
     u32 cipher_type;
-    /* pmk length */
-    u8 pmk_len;
     /*
-       PMK: Info is optional in Discovery phase. PMK info can be passed during
+       Nan Security Key Info is optional in Discovery phase.
+       PMK or passphrase info can be passed during
        the NDP session.
-     */
-    u8 pmk[NAN_PMK_INFO_LEN];
+    */
+    NanSecurityKeyInfo key_info;
 
     /* Security Context Identifiers length */
     u32 scid_len;
@@ -1176,13 +1214,12 @@ typedef struct {
 
     /* NAN Cipher Suite Type */
     u32 cipher_type;
-    /* pmk length */
-    u8 pmk_len;
     /*
-       PMK: Info is optional in Discovery phase. PMK info can be passed during
+       Nan Security Key Info is optional in Discovery phase.
+       PMK or passphrase info can be passed during
        the NDP session.
     */
-    u8 pmk[NAN_PMK_INFO_LEN];
+    NanSecurityKeyInfo key_info;
 
     /* Security Context Identifiers length */
     u32 scid_len;
@@ -2010,13 +2047,22 @@ typedef struct {
     NanDataPathCfg ndp_cfg;
     /* App/Service information of the Initiator */
     NanDataPathAppInfo app_info;
-
     /* NAN Cipher Suite Type */
     u32 cipher_type;
-    /* pmk length */
-    u8 pmk_len;
-    /* PMK */
-    u8 pmk[NAN_PMK_INFO_LEN];
+    /*
+       Nan Security Key Info is optional in Discovery phase.
+       PMK or passphrase info can be passed during
+       the NDP session.
+    */
+    NanSecurityKeyInfo key_info;
+    /* length of service name */
+    u32 service_name_len;
+    /*
+       UTF-8 encoded string identifying the service name.
+       The service name field is only used if a Nan discovery
+       is not associated with the NDP (out-of-band discovery).
+    */
+    u8 service_name[NAN_MAX_SERVICE_NAME_LEN];
 } NanDataPathInitiatorRequest;
 
 /*
@@ -2041,13 +2087,22 @@ typedef struct {
     NanDataPathAppInfo app_info;
     /* Response Code indicating ACCEPT/REJECT/DEFER */
     NanDataPathResponseCode rsp_code;
-
     /* NAN Cipher Suite Type */
     u32 cipher_type;
-    /* pmk length */
-    u8 pmk_len;
-    /* PMK */
-    u8 pmk[NAN_PMK_INFO_LEN];
+    /*
+       Nan Security Key Info is optional in Discovery phase.
+       PMK or passphrase info can be passed during
+       the NDP session.
+    */
+    NanSecurityKeyInfo key_info;
+    /* length of service name */
+    u32 service_name_len;
+    /*
+       UTF-8 encoded string identifying the service name.
+       The service name field is only used if a Nan discovery
+       is not associated with the NDP (out-of-band discovery).
+    */
+    u8 service_name[NAN_MAX_SERVICE_NAME_LEN];
 } NanDataPathIndicationResponse;
 
 /* NDP termination info */
