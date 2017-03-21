@@ -320,9 +320,12 @@ typedef struct {
     u32 max_ndp_sessions;
     u32 max_app_info_len;
     u32 max_queued_transmit_followup_msgs;
+    u32 ndp_supported_bands;
     u32 cipher_suites_supported;
-    u32 max_subscribe_address;
+    u32 max_scid_len;
+    bool is_ndp_security_supported;
     u32 max_sdea_service_specific_info_len;
+    u32 max_subscribe_address;
 } NanCapabilities;
 
 /*
