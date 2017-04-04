@@ -31,6 +31,11 @@ LOCAL_MODULE:= libhardware_legacy
 
 include $(BUILD_SHARED_LIBRARY)
 
+include $(CLEAR_VARS)
+LOCAL_MODULE := libhardware_legacy_headers
+LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)/include
+include $(BUILD_HEADER_LIBRARY)
+
 # legacy_audio builds it's own set of libraries that aren't linked into
 # hardware_legacy
 include $(LEGACY_AUDIO_MAKEFILES)
