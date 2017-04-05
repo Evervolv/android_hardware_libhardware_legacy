@@ -963,6 +963,16 @@ typedef struct {
       BIT2 - Disable Joined Cluster Event.
     */
     u8 discovery_indication_cfg;  // default value 0x0
+    /*
+       BIT 0 is used to specify to include Service IDs in Sync/Discovery beacons
+       0 - Do not include SIDs in any beacons
+       1 - Include SIDs in all beacons.
+       Rest 7 bits are count field which allows control over the number of SIDs
+       included in the Beacon.  0 means to include as many SIDs that fit into
+       the maximum allow Beacon frame size
+    */
+    u8 config_subscribe_sid_beacon;
+    u32 subscribe_sid_beacon_val; // default value 0x0
 } NanEnableRequest;
 
 /*
@@ -1401,6 +1411,16 @@ typedef struct {
       BIT2 - Disable Joined Cluster Event.
     */
     u8 discovery_indication_cfg; // default value of 0
+    /*
+       BIT 0 is used to specify to include Service IDs in Sync/Discovery beacons
+       0 - Do not include SIDs in any beacons
+       1 - Include SIDs in all beacons.
+       Rest 7 bits are count field which allows control over the number of SIDs
+       included in the Beacon.  0 means to include as many SIDs that fit into
+       the maximum allow Beacon frame size
+    */
+    u8 config_subscribe_sid_beacon;
+    u32 subscribe_sid_beacon_val; // default value 0x0
 } NanConfigRequest;
 
 /*
