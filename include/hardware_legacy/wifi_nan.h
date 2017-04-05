@@ -1047,6 +1047,7 @@ typedef struct {
       BIT0 - Disable publish termination indication.
       BIT1 - Disable match expired indication.
       BIT2 - Disable followUp indication received (OTA).
+      BIT3 - Disable publishReplied indication.
     */
     u8 recv_indication_cfg;
     /*
@@ -1673,6 +1674,27 @@ typedef struct {
 } NanResponseMsg;
 
 /*
+  Publish Replied Indication
+  The PublishRepliedInd Message is sent by the DE when an Active Subscribe is
+  received over the air and it matches a Solicited PublishServiceReq which had
+  been created with the replied_event_flag set.
+*/
+typedef struct {
+    /*
+       A 32 bit Requestor Instance Id which is sent to the Application.
+       This Id will be sent in any subsequent UnmatchInd/FollowupInd
+       messages
+    */
+    u32 requestor_instance_id;
+    u8 addr[NAN_MAC_ADDR_LEN];
+    /*
+       If RSSI filtering was configured in NanPublishRequest then this
+       field will contain the received RSSI value. 0 if not
+    */
+    u8 rssi_value;
+} NanPublishRepliedInd;
+
+/*
   Publish Terminated
   The PublishTerminatedInd message is sent by the DE whenever a Publish
   terminates from a user-specified timeout or a unrecoverable error in the DE.
@@ -2216,6 +2238,7 @@ typedef struct {
     /* NotifyResponse invoked to notify the status of the Request */
     void (*NotifyResponse)(transaction_id id, NanResponseMsg* rsp_data);
     /* Callbacks for various Events */
+    void (*EventPublishReplied)(NanPublishRepliedInd *event);
     void (*EventPublishTerminated)(NanPublishTerminatedInd* event);
     void (*EventMatch) (NanMatchInd* event);
     void (*EventMatchExpired) (NanMatchExpiredInd* event);
