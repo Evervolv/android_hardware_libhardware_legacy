@@ -18,6 +18,7 @@
 #define __NAN_H__
 
 #include <net/if.h>
+#include <stdbool.h>
 #include "wifi_hal.h"
 
 #ifdef __cplusplus
@@ -1589,6 +1590,7 @@ typedef struct
     u32 discBeaconTxFailures;
     u32 amHopCountExpireCount;
     u32 ndpChannelFreq;
+    u32 ndpChannelFreq2;
 } NanSyncStats;
 
 /* NAN Misc DE Statistics */
