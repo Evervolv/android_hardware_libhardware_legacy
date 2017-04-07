@@ -26,7 +26,7 @@
 #include <pthread.h>
 
 #define LOG_TAG "power"
-#include <utils/Log.h>
+#include <log/log.h>
 
 enum {
     ACQUIRE_PARTIAL_WAKE_LOCK = 0,
