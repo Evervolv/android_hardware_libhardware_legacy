@@ -5,5 +5,5 @@ cc_library {
 
     srcs: ["power/power.c"],
     export_include_dirs: ["include"],
-    shared_libs: ["libcutils"],
+    shared_libs: ["libcutils", "liblog"],
 }
