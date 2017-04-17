@@ -6,6 +6,7 @@ subdirs = [
 
 cc_library_headers {
     name: "libhardware_legacy_headers",
+    vendor_available: true,
     export_include_dirs: ["include"],
 
     header_libs: ["libcutils_headers"],
@@ -23,6 +24,7 @@ cc_library {
 
 cc_library_shared {
     name: "libhardware_legacy",
+    vendor_available: true,
 
     shared_libs: [
         "libbase",
