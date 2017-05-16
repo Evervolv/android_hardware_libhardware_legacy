@@ -224,6 +224,12 @@ typedef enum {
     NAN_DP_CONFIG_SECURITY
 } NanDataPathSecurityCfgStatus;
 
+typedef enum {
+    NAN_QOS_NOT_REQUIRED = 0,
+    NAN_QOS_REQUIRED
+} NanQosCfgStatus;
+
+
 /* Data request Responder's response */
 typedef enum {
     NAN_DP_REQUEST_ACCEPT = 0,
@@ -330,6 +336,11 @@ typedef struct {
       when configured NanRangeReportInd received
     */
     NanRangeReport range_report;
+    /*
+      NAN QOS required flag to indicate
+      if QOS is required or not.
+    */
+    NanQosCfgStatus qos_cfg;
 } NanSdeaCtrlParams;
 
 /*
@@ -1612,6 +1623,7 @@ typedef struct
     u32 amHopCountExpireCount;
     u32 ndpChannelFreq;
     u32 ndpChannelFreq2;
+    u32 schedUpdateChannelFreq;
 } NanSyncStats;
 
 /* NAN Misc DE Statistics */
