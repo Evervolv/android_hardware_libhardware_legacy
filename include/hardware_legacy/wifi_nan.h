@@ -1353,11 +1353,11 @@ typedef struct {
       determine whether configuration is to be passed or not.
     */
     /*
-       2 byte quantity which defines the window size over
+       1 byte quantity which defines the window size over
        which the “average RSSI” will be calculated over.
     */
     u8 config_rssi_window_size;
-    u16 rssi_window_size_val; // default value 0x08
+    u8 rssi_window_size_val; // default value 0x08
     /*
        If set to 1, the Discovery Engine will enclose the Cluster
        Attribute only sent in Beacons in a Vendor Specific Attribute
