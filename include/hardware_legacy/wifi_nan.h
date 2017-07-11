@@ -984,6 +984,13 @@ typedef struct {
     */
     u8 config_subscribe_sid_beacon;
     u32 subscribe_sid_beacon_val; // default value 0x0
+    /*
+       Discovery Beacon Interval config.
+       Default value is 128 msec in 2G DW and 176 msec in 2G/5G DW.
+       When 0 value is passed it is reset to default value of 128 or 176 msec.
+    */
+    u8 config_discovery_beacon_int;
+    u32 discovery_beacon_interval;
 } NanEnableRequest;
 
 /*
@@ -1432,6 +1439,13 @@ typedef struct {
     */
     u8 config_subscribe_sid_beacon;
     u32 subscribe_sid_beacon_val; // default value 0x0
+    /*
+       Discovery Beacon Interval config.
+       Default value is 128 msec in 2G DW and 176 msec in 2G/5G DW.
+       When 0 value is passed it is reset to default value of 128 or 176 msec.
+    */
+    u8 config_discovery_beacon_int;
+    u32 discovery_beacon_interval;
 } NanConfigRequest;
 
 /*
