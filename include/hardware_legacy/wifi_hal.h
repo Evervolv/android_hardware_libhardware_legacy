@@ -36,6 +36,11 @@ typedef enum {
     WIFI_CHAN_WIDTH_INVALID = -1
 } wifi_channel_width;
 
+/* Pre selected Power scenarios to be applied from BDF file */
+typedef enum {
+    WIFI_POWER_SCENARIO_VOICE_CALL    = 0,
+} wifi_power_scenario;
+
 typedef int wifi_radio;
 typedef int wifi_channel;
 
@@ -161,8 +166,8 @@ wifi_error wifi_set_iface_event_handler(wifi_request_id id, wifi_interface_handl
 wifi_error wifi_reset_iface_event_handler(wifi_request_id id, wifi_interface_handle iface);
 
 wifi_error wifi_set_nodfs_flag(wifi_interface_handle handle, u32 nodfs);
-wifi_error wifi_set_tx_power_limit(wifi_interface_handle handle, u32 tx_level_dbm);
-wifi_error wifi_reset_tx_power_limit(wifi_interface_handle handle);
+wifi_error wifi_select_tx_power_scenario(wifi_interface_handle handle, wifi_power_scenario scenario);
+wifi_error wifi_reset_tx_power_scenario(wifi_interface_handle handle);
 
 typedef struct rx_data_cnt_details_t {
     int rx_unicast_cnt;     /*Total rx unicast packet which woke up host */
@@ -380,8 +385,9 @@ typedef struct {
     wifi_error (*wifi_nan_data_end)(transaction_id id,
                                     wifi_interface_handle iface,
                                     NanDataPathEndRequest *msg);
-    wifi_error (*wifi_set_tx_power_limit)(wifi_interface_handle iface, u32 tx_level_dbm);
-    wifi_error (*wifi_reset_tx_power_limit)(wifi_interface_handle iface);
+    wifi_error (*wifi_select_tx_power_scenario)(wifi_interface_handle iface,
+                                                wifi_power_scenario scenario);
+    wifi_error (*wifi_reset_tx_power_scenario)(wifi_interface_handle iface);
 
     /**
      * Returns the chipset's hardware filtering capabilities:
