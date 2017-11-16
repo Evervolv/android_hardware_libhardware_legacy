@@ -64,6 +64,7 @@ typedef u32 NanDataPathId;
 #define NAN_MAX_SDEA_SERVICE_SPECIFIC_INFO_LEN  1024
 #define NAN_SECURITY_MIN_PASSPHRASE_LEN         8
 #define NAN_SECURITY_MAX_PASSPHRASE_LEN         63
+#define NAN_MAX_CHANNEL_INFO_SUPPORTED          4
 
 /*
   Definition of various NanResponseType
@@ -135,6 +136,13 @@ typedef enum {
 typedef enum {
     NAN_TCA_ID_CLUSTER_SIZE = 0
 } NanTcaType;
+
+/* NAN Channel Info */
+typedef struct {
+    u32 channel;
+    u32 bandwidth;
+    u32 nss;
+} NanChannelInfo;
 
 /*
   Various NAN Protocol Response code
@@ -306,6 +314,10 @@ typedef struct {
 #define NAN_RANGING_INDICATE_CONTINUOUS_MASK   0x01
 #define NAN_RANGING_INDICATE_INGRESS_MET_MASK  0x02
 #define NAN_RANGING_INDICATE_EGRESS_MET_MASK   0x04
+
+/* NAN schedule update reason MASKS */
+#define NAN_SCHEDULE_UPDATE_NSS_MASK   0x01
+#define NAN_SCHEDULE_UPDATE_CHANNEL_MASK  0x02
 
 /*
    Structure to set the Service Descriptor Extension
@@ -2279,7 +2291,43 @@ typedef struct {
       expected reason codes.
     */
     NanStatusType reason_code;
+    /* Number of channels for which info is indicated */
+    u32 num_channels;
+    /*
+      Data indicating the Channel list and BW of the channel.
+    */
+    NanChannelInfo channel_info[NAN_MAX_CHANNEL_INFO_SUPPORTED];
 } NanDataPathConfirmInd;
+
+/*
+ Event indication of schedule update is received on both
+ initiator and responder when a schedule change occurs
+*/
+typedef struct {
+    /*
+      NMI mac address
+    */
+    u8 peer_mac_addr[NAN_MAC_ADDR_LEN];
+    /*
+      Reason code indicating the cause of schedule update.
+      BIT_0 NSS Update
+      BIT_1 Channel list update
+    */
+    u32 schedule_update_reason_code;
+    /* Number of channels for which info is indicated */
+    u32 num_channels;
+    /*
+      Data indicating the Channel list and BW of the channel.
+    */
+    NanChannelInfo channel_info[NAN_MAX_CHANNEL_INFO_SUPPORTED];
+    /* Number of NDP instance Ids */
+    u8 num_ndp_instances;
+    /*
+      Unique token Id generated on the initiator/responder side
+      used for a NDP session between two NAN devices
+    */
+    NanDataPathId ndp_instance_id[];
+} NanDataPathScheduleUpdateInd;
 
 /*
   Event indication received on the
@@ -2341,6 +2389,7 @@ typedef struct {
     void (*EventTransmitFollowup) (NanTransmitFollowupInd* event);
     void (*EventRangeRequest) (NanRangeRequestInd* event);
     void (*EventRangeReport) (NanRangeReportInd* event);
+    void (*EventScheduleUpdate)(NanDataPathScheduleUpdateInd* event);
 } NanCallbackHandler;
 
 /**@brief nan_enable_request
