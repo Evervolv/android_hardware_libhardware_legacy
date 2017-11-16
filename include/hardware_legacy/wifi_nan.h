@@ -65,7 +65,6 @@ typedef u32 NanDataPathId;
 #define NAN_SECURITY_MIN_PASSPHRASE_LEN         8
 #define NAN_SECURITY_MAX_PASSPHRASE_LEN         63
 
-
 /*
   Definition of various NanResponseType
 */
@@ -991,6 +990,27 @@ typedef struct {
     */
     u8 config_discovery_beacon_int;
     u32 discovery_beacon_interval;
+    /*
+       Enable Number of Spatial Streams.
+       This is NAN Power Optimization feature for NAN discovery.
+    */
+    u8 config_nss;
+    // default value is implementation specific and passing 0 sets it to default
+    u32 nss;
+    /*
+       Enable device level NAN Ranging feature.
+       0 - Disable
+       1 - Enable
+    */
+    u8 config_enable_ranging;
+    u32 enable_ranging;
+    /*
+       Enable/Disable DW Early termination.
+       0 - Disable
+       1 - Enable
+    */
+    u8 config_dw_early_termination;
+    u32 enable_dw_termination;
 } NanEnableRequest;
 
 /*
@@ -1446,6 +1466,27 @@ typedef struct {
     */
     u8 config_discovery_beacon_int;
     u32 discovery_beacon_interval;
+    /*
+       Enable Number of Spatial Streams.
+       This is NAN Power Optimization feature for NAN discovery.
+    */
+    u8 config_nss;
+    // default value is implementation specific and passing 0 sets it to default
+    u32 nss;
+    /*
+       Enable device level NAN Ranging feature.
+       0 - Disable
+       1 - Enable
+    */
+    u8 config_enable_ranging;
+    u32 enable_ranging;
+    /*
+       Enable/Disable DW Early termination.
+       0 - Disable
+       1 - Enable
+    */
+    u8 config_dw_early_termination;
+    u32 enable_dw_termination;
 } NanConfigRequest;
 
 /*
