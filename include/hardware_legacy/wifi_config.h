@@ -22,6 +22,9 @@ wifi_error wifi_extended_dtim_config_set(wifi_request_id id,
 //set the country code to driver
 wifi_error wifi_set_country_code(wifi_interface_handle iface, const char* country_code);
 
+//Set the powersave to driver
+wifi_error wifi_set_qpower(wifi_interface_handle iface, u8 powersave);
+
 //set the wifi_iface stats averaging factor used to calculate
 // statistics like average the TSF offset or average number of frame leaked
 // For instance, upon beacon reception:
