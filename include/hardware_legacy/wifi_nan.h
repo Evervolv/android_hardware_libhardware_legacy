@@ -362,7 +362,7 @@ typedef struct {
        Distance to the NAN device with the MAC address indicated
        with ranged mac address.
     */
-    u32 range_measurement_cm;
+    u32 range_measurement_mm;
     /* Ranging event matching the configuration of continuous/ingress/egress. */
     u32 ranging_event_type;
 } NanRangeInfo;
@@ -654,10 +654,10 @@ typedef struct {
       BIT2 - Egress distance is >=.
     */
     u32 config_ranging_indications;
-    /* Ingress distance in centimeters (optional) */
-    u32 distance_ingress_cm;
-    /* Egress distance in centimeters (optional) */
-    u32 distance_egress_cm;
+    /* Ingress distance in millimeters (optional) */
+    u32 distance_ingress_mm;
+    /* Egress distance in millmilliimeters (optional) */
+    u32 distance_egress_mm;
 } NanRangingCfg;
 
 /* NAN Ranging request's response */
@@ -2365,7 +2365,7 @@ typedef struct {
        Distance to the NAN device with the MAC address indicated
        with ranged mac address.
     */
-    u32 range_measurement_cm;
+    u32 range_measurement_mm;
 } NanRangeReportInd;
 
 /* Response and Event Callbacks */
