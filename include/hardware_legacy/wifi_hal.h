@@ -40,7 +40,11 @@ typedef enum {
 
 /* Pre selected Power scenarios to be applied from BDF file */
 typedef enum {
-    WIFI_POWER_SCENARIO_VOICE_CALL    = 0,
+    WIFI_POWER_SCENARIO_VOICE_CALL       = 0,
+    WIFI_POWER_SCENARIO_ON_HEAD_CELL_OFF = 1,
+    WIFI_POWER_SCENARIO_ON_HEAD_CELL_ON  = 2,
+    WIFI_POWER_SCENARIO_ON_BODY_CELL_OFF = 3,
+    WIFI_POWER_SCENARIO_ON_BODY_CELL_ON  = 4,
 } wifi_power_scenario;
 
 /*
@@ -137,6 +141,7 @@ void wifi_get_error_info(wifi_error err, const char **msg); // return a pointer 
 #define WIFI_FEATURE_IE_WHITELIST       0x1000000   // Support Probe IE white listing
 #define WIFI_FEATURE_SCAN_RAND          0x2000000   // Support MAC & Probe Sequence Number randomization
 #define WIFI_FEATURE_SET_TX_POWER_LIMIT 0x4000000   // Support Tx Power Limit setting
+#define WIFI_FEATURE_USE_BODY_HEAD_SAR  0x8000000   // Support Using Body/Head Proximity for SAR
 // Add more features here
 
 
