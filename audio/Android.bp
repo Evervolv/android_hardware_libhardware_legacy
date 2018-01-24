@@ -22,7 +22,6 @@ cc_library_static {
 
     header_libs: [
         "libbase_headers",
-        "libaudiohal_legacy_headers",
         "libhardware_legacy_headers",
     ],
     export_header_lib_headers: ["libhardware_legacy_headers"],
