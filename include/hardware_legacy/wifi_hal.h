@@ -23,6 +23,8 @@ extern "C"
 #endif
 #include <stdint.h>
 
+#define IFNAMSIZ 16
+
 /* WiFi Common definitions */
 /* channel operating width */
 typedef enum {
@@ -40,6 +42,16 @@ typedef enum {
 typedef enum {
     WIFI_POWER_SCENARIO_VOICE_CALL    = 0,
 } wifi_power_scenario;
+
+/*
+ * enum wlan_mac_band - Band information corresponding to the WLAN MAC.
+ */
+typedef enum {
+/* WLAN MAC Operates in 2.4 GHz Band */
+    WLAN_MAC_2_4_BAND = 1 << 0,
+/* WLAN MAC Operates in 5 GHz Band */
+    WLAN_MAC_5_0_BAND = 1 << 1
+} wlan_mac_band;
 
 typedef int wifi_radio;
 typedef int wifi_channel;
@@ -157,6 +169,25 @@ typedef struct {
 
     // More event handlers
 } wifi_event_handler;
+
+typedef struct {
+    char iface_name[IFNAMSIZ + 1];
+    wifi_channel channel;
+} wifi_iface_info;
+
+typedef struct {
+    u32 wlan_mac_id;
+/* BIT MASK of BIT(WLAN_MAC*) as represented by wlan_mac_band */
+    u32 mac_band;
+/* Represents the connected Wi-Fi interfaces associated with each MAC */
+    int num_iface;
+    wifi_iface_info *iface_info;
+} wifi_mac_info;
+
+typedef struct {
+        void (*on_radio_mode_change)(wifi_request_id id, unsigned num_mac,
+                                     wifi_mac_info *mac_info);
+} wifi_radio_mode_change_handler;
 
 typedef struct {
         void (*on_rssi_threshold_breached)(wifi_request_id id, u8 *cur_bssid, s8 cur_rssi);
@@ -411,6 +442,8 @@ typedef struct {
                                                fw_roaming_state_t state);
     wifi_error (*wifi_configure_roaming)(wifi_interface_handle handle,
                                          wifi_roaming_config *roaming_config);
+    wifi_error (*wifi_set_radio_mode_change_handler)(wifi_request_id id, wifi_interface_handle
+                        iface, wifi_radio_mode_change_handler eh);
 } wifi_hal_fn;
 wifi_error init_wifi_vendor_hal_func_table(wifi_hal_fn *fn);
 #ifdef __cplusplus
