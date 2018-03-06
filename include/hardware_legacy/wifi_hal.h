@@ -106,6 +106,17 @@ typedef struct wifi_interface_info *wifi_interface_handle;
 /* Initialize/Cleanup */
 
 wifi_error wifi_initialize(wifi_handle *handle);
+
+/**
+ * wifi_wait_for_driver
+ * Function should block until the driver is ready to proceed.
+ * Any errors from this function is considered fatal & will fail the HAL startup sequence.
+ *
+ * on success returns WIFI_SUCCESS
+ * on failure returns WIFI_ERROR_TIMED_OUT
+ */
+wifi_error wifi_wait_for_driver_ready(void);
+
 typedef void (*wifi_cleaned_up_handler) (wifi_handle handle);
 void wifi_cleanup(wifi_handle handle, wifi_cleaned_up_handler handler);
 void wifi_event_loop(wifi_handle handle);
@@ -267,6 +278,7 @@ typedef struct wlan_driver_wake_reason_cnt_t {
 //wifi HAL function pointer table
 typedef struct {
     wifi_error (* wifi_initialize) (wifi_handle *);
+    wifi_error (* wifi_wait_for_driver_ready) (void);
     void (* wifi_cleanup) (wifi_handle, wifi_cleaned_up_handler);
     void (*wifi_event_loop)(wifi_handle);
     void (* wifi_get_error_info) (wifi_error , const char **);
