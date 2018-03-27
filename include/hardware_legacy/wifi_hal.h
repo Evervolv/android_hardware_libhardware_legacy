@@ -453,6 +453,9 @@ typedef struct {
      */
     wifi_error (*wifi_set_packet_filter)(wifi_interface_handle handle,
                                          const u8 *program, u32 len);
+    wifi_error (*wifi_read_packet_filter)(wifi_interface_handle handle,
+                                          u32 src_offset, u8 *host_dst,
+                                          u32 length);
     wifi_error (*wifi_get_roaming_capabilities)(wifi_interface_handle handle,
                                                 wifi_roaming_capabilities *caps);
     wifi_error (*wifi_enable_firmware_roaming)(wifi_interface_handle handle,
