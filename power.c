@@ -57,7 +57,7 @@ open_file_descriptors(const char * const paths[])
         int fd = open(paths[i], O_RDWR | O_CLOEXEC);
         if (fd < 0) {
             g_error = -errno;
-            fprintf(stderr, "fatal error opening \"%s\": %s\n", paths[i],
+            ALOGE("fatal error opening \"%s\": %s\n", paths[i],
                 strerror(errno));
             return -1;
         }
