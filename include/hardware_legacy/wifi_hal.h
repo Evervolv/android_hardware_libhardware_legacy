@@ -478,6 +478,9 @@ typedef struct {
                         iface, wifi_radio_mode_change_handler eh);
     wifi_error (*wifi_set_latency_mode)(wifi_interface_handle iface,
                                         wifi_latency_mode mode);
+    wifi_error (*wifi_add_or_remove_virtual_intf)(wifi_interface_handle iface,
+                                                  const char* ifname, u32 iface_type,
+                                                  bool create);
     wifi_error (*wifi_set_qpower)(wifi_interface_handle iface, u8 powersave);
 } wifi_hal_fn;
 wifi_error init_wifi_vendor_hal_func_table(wifi_hal_fn *fn);
