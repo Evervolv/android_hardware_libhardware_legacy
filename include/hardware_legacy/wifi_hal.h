@@ -552,6 +552,9 @@ typedef struct {
     wifi_error (*wifi_virtual_interface_create)(wifi_handle handle, const char* ifname,
                                                 wifi_interface_type iface_type);
     wifi_error (*wifi_virtual_interface_delete)(wifi_handle handle, const char* ifname);
+    wifi_error (*wifi_add_or_remove_virtual_intf)(wifi_interface_handle iface,
+                                                  const char* ifname, u32 iface_type,
+                                                  bool create);
 
 } wifi_hal_fn;
 wifi_error init_wifi_vendor_hal_func_table(wifi_hal_fn *fn);
