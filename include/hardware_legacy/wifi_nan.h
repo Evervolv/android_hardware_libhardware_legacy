@@ -40,8 +40,9 @@ typedef u16 transaction_id;
 typedef u32 NanDataPathId;
 
 #define NAN_MAC_ADDR_LEN                6
+#define NAN_IPV6_ADDR_LEN               16
 #define NAN_MAJOR_VERSION               2
-#define NAN_MINOR_VERSION               0
+#define NAN_MINOR_VERSION               1
 #define NAN_MICRO_VERSION               0
 #define NAN_MAX_SOCIAL_CHANNELS         3
 
@@ -388,6 +389,7 @@ typedef struct {
     bool is_ndp_security_supported;
     u32 max_sdea_service_specific_info_len;
     u32 max_subscribe_address;
+    u32 ndpe_attr_supported;
 } NanCapabilities;
 
 /*
@@ -1023,6 +1025,15 @@ typedef struct {
     */
     u8 config_dw_early_termination;
     u32 enable_dw_termination;
+    /*
+       Indicate whether to use NDPE attribute to bring-up TCP/IP connection.
+       If config_ndpe_attr is not configured, the default behavior is
+       not using NDPE attr, and the capability is not advertised.
+       0 - Not use
+       1 - Use
+    */
+    u8 config_ndpe_attr;
+    u32 use_ndpe_attr;
 } NanEnableRequest;
 
 /*
@@ -1499,6 +1510,13 @@ typedef struct {
     */
     u8 config_dw_early_termination;
     u32 enable_dw_termination;
+    /*
+       Indicate whether to use NDPE attribute to bring-up TCP/IP connection
+       0 - Not use
+       1 - Use
+    */
+    u8 config_ndpe_attr;
+    u32 use_ndpe_attr;
 } NanConfigRequest;
 
 /*
@@ -2189,6 +2207,11 @@ typedef struct {
        is not associated with the NDP (out-of-band discovery).
     */
     u8 service_name[NAN_MAX_SERVICE_NAME_LEN];
+
+    /* NAN IPV6 address present or not, 0 - not present, 1 - present */
+    u8 nan_ipv6_addr_present;
+    /* NAN ipv6 address, the initiator side address */
+    u8 nan_ipv6_intf_addr[NAN_IPV6_ADDR_LEN];
 } NanDataPathInitiatorRequest;
 
 /*
@@ -2229,6 +2252,15 @@ typedef struct {
        is not associated with the NDP (out-of-band discovery).
     */
     u8 service_name[NAN_MAX_SERVICE_NAME_LEN];
+
+    /* NAN IPV6 address present or not, 0 - not present, 1 - present */
+    u8 nan_ipv6_addr_present;
+    /* NAN ipv6 address, the responder side address */
+    u8 nan_ipv6_intf_addr[NAN_IPV6_ADDR_LEN];
+    /* NAN transport port number, 0 means that port is not present */
+    u16 nan_transport_port;
+    /* NAN transport protocol, 0xFF means that protocol is not present */
+    u8 nan_transport_proto;
 } NanDataPathIndicationResponse;
 
 /* NDP termination info */
@@ -2264,6 +2296,15 @@ typedef struct {
     NanDataPathCfg ndp_cfg;
     /* App/Service information of the initiator */
     NanDataPathAppInfo app_info;
+    /*
+      If nan_peer_ndpe_support is 1 then the remote peer supports
+      NAN NDPE otherwise its set to 0.
+     */
+    u8 nan_peer_ndpe_support;
+    /* NAN IPV6 address present or not, 0 - not present, 1 - present */
+    u8 nan_ipv6_addr_present;
+    /* NAN ipv6 address, the initiator side address */
+    u8 nan_ipv6_intf_addr[NAN_IPV6_ADDR_LEN];
 } NanDataPathRequestInd;
 
 /*
@@ -2297,6 +2338,26 @@ typedef struct {
       Data indicating the Channel list and BW of the channel.
     */
     NanChannelInfo channel_info[NAN_MAX_CHANNEL_INFO_SUPPORTED];
+    /*
+      If nan_peer_ndpe_support is 1 then the remote peer supports
+      NAN NDPE otherwise its set to 0.
+    */
+    u8 nan_peer_ndpe_support;
+    /* NAN IPV6 address present or not, 0 - not present, 1 - present */
+    u8 nan_ipv6_addr_present;
+    /* NAN ipv6 address, the responder side address */
+    u8 nan_ipv6_intf_addr[NAN_IPV6_ADDR_LEN];
+    /*
+      NAN transport port number, 0 means that port is not present.
+      On the responder side the port and proto will be whatever the
+      responder has sent in the NanDataPathIndicationResponse.
+      On the initiator side the values of port and proto carry the
+      information from the remote responder peer and will be valid only
+      if remote peer supports NDPE.
+    */
+    u16 nan_transport_port;
+    /* NAN transport protocol, 0xFF meanst that protocol is not present */
+    u8 nan_transport_proto;
 } NanDataPathConfirmInd;
 
 /*
