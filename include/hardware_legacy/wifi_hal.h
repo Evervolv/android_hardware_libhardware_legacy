@@ -47,6 +47,11 @@ typedef enum {
     WIFI_POWER_SCENARIO_ON_BODY_CELL_ON  = 4,
 } wifi_power_scenario;
 
+typedef enum {
+  WIFI_LATENCY_MODE_NORMAL    = 0,
+  WIFI_LATENCY_MODE_LOW       = 1,
+} wifi_latency_mode;
+
 /*
  * enum wlan_mac_band - Band information corresponding to the WLAN MAC.
  */
@@ -153,6 +158,7 @@ void wifi_get_error_info(wifi_error err, const char **msg); // return a pointer 
 #define WIFI_FEATURE_SCAN_RAND          0x2000000   // Support MAC & Probe Sequence Number randomization
 #define WIFI_FEATURE_SET_TX_POWER_LIMIT 0x4000000   // Support Tx Power Limit setting
 #define WIFI_FEATURE_USE_BODY_HEAD_SAR  0x8000000   // Support Using Body/Head Proximity for SAR
+#define WIFI_FEATURE_SET_LATENCY_MODE   0x40000000  // Support Latency mode setting
 // Add more features here
 
 
@@ -215,6 +221,7 @@ wifi_error wifi_reset_iface_event_handler(wifi_request_id id, wifi_interface_han
 wifi_error wifi_set_nodfs_flag(wifi_interface_handle handle, u32 nodfs);
 wifi_error wifi_select_tx_power_scenario(wifi_interface_handle handle, wifi_power_scenario scenario);
 wifi_error wifi_reset_tx_power_scenario(wifi_interface_handle handle);
+wifi_error wifi_set_latency_mode(wifi_interface_handle handle, wifi_latency_mode mode);
 
 typedef struct rx_data_cnt_details_t {
     int rx_unicast_cnt;     /*Total rx unicast packet which woke up host */
@@ -464,6 +471,8 @@ typedef struct {
                                          wifi_roaming_config *roaming_config);
     wifi_error (*wifi_set_radio_mode_change_handler)(wifi_request_id id, wifi_interface_handle
                         iface, wifi_radio_mode_change_handler eh);
+    wifi_error (*wifi_set_latency_mode)(wifi_interface_handle iface,
+                                        wifi_latency_mode mode);
 } wifi_hal_fn;
 wifi_error init_wifi_vendor_hal_func_table(wifi_hal_fn *fn);
 #ifdef __cplusplus
