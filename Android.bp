@@ -1,9 +1,5 @@
 // Copyright 2006 The Android Open Source Project
 
-subdirs = [
-    "audio",
-]
-
 cc_library_headers {
     name: "libhardware_legacy_headers",
     vendor_available: true,
@@ -15,11 +11,10 @@ cc_library_headers {
 
 cc_library {
     name: "libpower",
-
-    srcs: ["power.c"],
-    cflags: ["-Wall", "-Werror"],
+    defaults: ["system_suspend_defaults"],
+    srcs: ["power.cpp"],
     export_include_dirs: ["include"],
-    shared_libs: ["libcutils", "liblog"],
+    shared_libs: ["android.system.suspend@1.0"],
     vendor_available: true,
     vndk: {
         enabled: true,
@@ -28,16 +23,15 @@ cc_library {
 
 cc_library_shared {
     name: "libhardware_legacy",
+    defaults: ["system_suspend_defaults"],
     vendor_available: true,
     vndk: {
         enabled: true,
     },
 
     shared_libs: [
-        "libbase",
+        "android.system.suspend@1.0",
         "libdl",
-        "libcutils",
-        "liblog",
     ],
 
     header_libs: [
@@ -51,12 +45,10 @@ cc_library_shared {
         "-DQEMU_HARDWARE",
         "-Wall",
         "-Werror",
-        "-Wno-unused-parameter",
-        "-Wno-gnu-designator",
     ],
 
     srcs: [
-        "power.c",
+        "power.cpp",
         "uevent.c",
     ],
 }
