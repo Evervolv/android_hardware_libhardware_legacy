@@ -36,13 +36,7 @@ static std::mutex gLock;
 static std::unordered_map<std::string, sp<IWakeLock>> gWakeLockMap;
 
 static sp<ISystemSuspend> getSystemSuspendServiceOnce() {
-    static std::once_flag initFlag;
-    static sp<ISystemSuspend> suspendService = nullptr;
-    std::call_once(initFlag, []() {
-        // It's possible for the calling process to not have permissions to
-        // ISystemSuspend. getService will then return nullptr.
-        suspendService = ISystemSuspend::getService();
-    });
+    static sp<ISystemSuspend> suspendService = ISystemSuspend::getService();
     return suspendService;
 }
 
@@ -64,8 +58,13 @@ int release_wake_lock(const char* id) {
     ATRACE_CALL();
     std::lock_guard<std::mutex> l{gLock};
     if (gWakeLockMap[id]) {
-        gWakeLockMap[id]->release();
-        gWakeLockMap[id] = nullptr;
+        // Ignore errors on release() call since hwbinder driver will clean up the underlying object
+        // once we clear the corresponding strong pointer.
+        auto ret = gWakeLockMap[id]->release();
+        if (!ret.isOk()) {
+            LOG(ERROR) << "IWakeLock::release() call failed: " << ret.description();
+        }
+        gWakeLockMap[id].clear();
         return 0;
     }
     return -1;
