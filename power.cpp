@@ -35,14 +35,14 @@ using android::system::suspend::V1_0::WakeLockType;
 static std::mutex gLock;
 static std::unordered_map<std::string, sp<IWakeLock>> gWakeLockMap;
 
-static sp<ISystemSuspend> getSystemSuspendServiceOnce() {
+static const sp<ISystemSuspend>& getSystemSuspendServiceOnce() {
     static sp<ISystemSuspend> suspendService = ISystemSuspend::getService();
     return suspendService;
 }
 
 int acquire_wake_lock(int, const char* id) {
     ATRACE_CALL();
-    sp<ISystemSuspend> suspendService = getSystemSuspendServiceOnce();
+    const auto& suspendService = getSystemSuspendServiceOnce();
     if (!suspendService) {
         return -1;
     }
