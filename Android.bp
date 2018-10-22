@@ -21,6 +21,13 @@ cc_library {
     },
 }
 
+cc_test {
+    name: "libpower_test",
+    defaults: ["system_suspend_defaults"],
+    srcs: ["power_test.cpp"],
+    shared_libs: ["libpower"],
+}
+
 cc_library_shared {
     name: "libhardware_legacy",
     defaults: ["system_suspend_defaults"],
