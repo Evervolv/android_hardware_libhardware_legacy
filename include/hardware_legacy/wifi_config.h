@@ -25,6 +25,9 @@ wifi_error wifi_set_country_code(wifi_interface_handle iface, const char* countr
 //Set the powersave to driver
 wifi_error wifi_set_qpower(wifi_interface_handle iface, u8 powersave);
 
+//Set the latency level to driver
+wifi_error wifi_set_latency_level(wifi_interface_handle iface, u16 level);
+
 //set the wifi_iface stats averaging factor used to calculate
 // statistics like average the TSF offset or average number of frame leaked
 // For instance, upon beacon reception:
