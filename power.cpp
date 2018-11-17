@@ -18,6 +18,7 @@
 #define ATRACE_TAG ATRACE_TAG_POWER
 
 #include <android-base/logging.h>
+#include <android/system/suspend/1.0/BpHwSystemSuspend.h>
 #include <android/system/suspend/1.0/ISystemSuspend.h>
 #include <hardware_legacy/power.h>
 #include <utils/Trace.h>
@@ -36,7 +37,30 @@ static std::mutex gLock;
 static std::unordered_map<std::string, sp<IWakeLock>> gWakeLockMap;
 
 static const sp<ISystemSuspend>& getSystemSuspendServiceOnce() {
-    static sp<ISystemSuspend> suspendService = ISystemSuspend::getService();
+    using android::system::suspend::V1_0::BpHwSystemSuspend;
+    static std::once_flag initFlag;
+    static sp<ISystemSuspend> suspendService = nullptr;
+
+    // TODO(b/117575503): We use this buffer to make sure that suspendService pointer and the
+    // underlying memory are not corrupted before using it. Ideally, memory corruption should be
+    // fixed.
+    static constexpr size_t bufSize = sizeof(BpHwSystemSuspend);
+    static char buf[bufSize];
+
+    std::call_once(initFlag, []() {
+        // It's possible for the calling process to not have permissions to
+        // ISystemSuspend. getService will then return nullptr.
+        suspendService = ISystemSuspend::getService();
+        if (suspendService) {
+            std::memcpy(buf, static_cast<void*>(suspendService.get()), bufSize);
+        }
+    });
+    if (suspendService) {
+        if (std::memcmp(buf, static_cast<void*>(suspendService.get()), bufSize) != 0) {
+            LOG(FATAL) << "Memory corrupted. Aborting.";
+        }
+    }
+
     return suspendService;
 }
 
