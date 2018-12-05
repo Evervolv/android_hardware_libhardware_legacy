@@ -49,7 +49,15 @@ int acquire_wake_lock(int, const char* id) {
 
     std::lock_guard<std::mutex> l{gLock};
     if (!gWakeLockMap[id]) {
-        gWakeLockMap[id] = suspendService->acquireWakeLock(WakeLockType::PARTIAL, id);
+        auto ret = suspendService->acquireWakeLock(WakeLockType::PARTIAL, id);
+        // It's possible that during device shutdown SystemSuspend service has already exited. In
+        // these situations HIDL calls to it will result in a DEAD_OBJECT transaction error. We
+        // check for DEAD_OBJECT so that libpower clients can shutdown cleanly.
+        if (ret.isDeadObject()) {
+            return -1;
+        } else {
+            gWakeLockMap[id] = ret;
+        }
     }
     return 0;
 }
