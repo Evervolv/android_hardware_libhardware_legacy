@@ -36,6 +36,7 @@ cc_test {
     srcs: ["power_test.cpp"],
     static_libs: ["libpower"],
     shared_libs: ["android.system.suspend@1.0"],
+    test_suites: ["device-tests"],
 }
 
 cc_library_shared {
