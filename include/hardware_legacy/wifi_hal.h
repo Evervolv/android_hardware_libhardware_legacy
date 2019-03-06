@@ -365,8 +365,9 @@ typedef struct {
     wifi_error (*wifi_set_lcr) (wifi_request_id id, wifi_interface_handle iface,
 	                             wifi_lcr_information *lcr);
     wifi_error (*wifi_start_sending_offloaded_packet)(wifi_request_id id,
-                                wifi_interface_handle iface, u8 *ip_packet, u16 ip_packet_len,
-                                u8 *src_mac_addr, u8 *dst_mac_addr, u32 period_msec);
+                                wifi_interface_handle iface, u16 ether_type, u8 *ip_packet,
+                                u16 ip_packet_len, u8 *src_mac_addr, u8 *dst_mac_addr,
+                                u32 period_msec);
     wifi_error (*wifi_stop_sending_offloaded_packet)(wifi_request_id id,
                                 wifi_interface_handle iface);
     wifi_error (*wifi_start_rssi_monitoring)(wifi_request_id id, wifi_interface_handle
