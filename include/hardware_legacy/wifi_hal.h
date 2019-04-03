@@ -40,11 +40,14 @@ typedef enum {
 
 /* Pre selected Power scenarios to be applied from BDF file */
 typedef enum {
+    WIFI_POWER_SCENARIO_INVALID          = -2,
+    WIFI_POWER_SCENARIO_DEFAULT          = -1,
     WIFI_POWER_SCENARIO_VOICE_CALL       = 0,
     WIFI_POWER_SCENARIO_ON_HEAD_CELL_OFF = 1,
     WIFI_POWER_SCENARIO_ON_HEAD_CELL_ON  = 2,
     WIFI_POWER_SCENARIO_ON_BODY_CELL_OFF = 3,
     WIFI_POWER_SCENARIO_ON_BODY_CELL_ON  = 4,
+    WIFI_POWER_SCENARIO_ON_BODY_BT       = 5,
 } wifi_power_scenario;
 
 typedef enum {
