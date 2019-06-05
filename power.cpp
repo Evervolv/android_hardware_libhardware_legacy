@@ -44,6 +44,7 @@ int acquire_wake_lock(int, const char* id) {
     ATRACE_CALL();
     const auto& suspendService = getSystemSuspendServiceOnce();
     if (!suspendService) {
+        LOG(ERROR) << "ISystemSuspend::getService() failed.";
         return -1;
     }
 
