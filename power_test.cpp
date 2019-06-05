@@ -73,8 +73,10 @@ TEST(LibpowerTest, WakeLockStressTest) {
             for (int j = 0; j < numLocks; j++) {
                 // We want ids to be unique.
                 std::string id = std::to_string(i) + "/" + std::to_string(j);
-                ASSERT_EQ(acquire_wake_lock(PARTIAL_WAKE_LOCK, id.c_str()), 0);
-                ASSERT_EQ(release_wake_lock(id.c_str()), 0);
+                ASSERT_EQ(acquire_wake_lock(PARTIAL_WAKE_LOCK, id.c_str()), 0)
+                    << "id: " << id;
+                ASSERT_EQ(release_wake_lock(id.c_str()), 0)
+                    << "id: " << id;;
             }
         });
     }
