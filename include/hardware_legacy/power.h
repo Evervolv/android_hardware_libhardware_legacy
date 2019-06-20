@@ -17,6 +17,10 @@
 #ifndef _HARDWARE_POWER_H
 #define _HARDWARE_POWER_H
 
+#if __cplusplus
+#include <memory>
+#include <string>
+#endif
 #include <stdint.h>
 
 #if __cplusplus
@@ -33,9 +37,27 @@ enum {
 int acquire_wake_lock(int lock, const char* id);
 int release_wake_lock(const char* id);
 
-
 #if __cplusplus
-} // extern "C"
+}  // extern "C"
 #endif
 
-#endif // _HARDWARE_POWER_H
+#if __cplusplus
+// RAII way to acquire wake locks.
+namespace android {
+namespace power {
+
+class WakeLock {
+   public:
+    WakeLock(const std::string& name);
+    ~WakeLock();
+
+   private:
+    class WakeLockImpl;
+    std::unique_ptr<WakeLockImpl> mImpl;
+};
+
+}  // namespace power
+}  // namespace android
+#endif
+
+#endif  // _HARDWARE_POWER_H
