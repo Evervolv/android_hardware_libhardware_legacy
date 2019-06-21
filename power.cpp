@@ -78,28 +78,3 @@ int release_wake_lock(const char* id) {
     }
     return -1;
 }
-
-namespace android::power {
-
-WakeLock::WakeLock(const std::string& name) : mImpl(std::make_unique<WakeLockImpl>(name)) {}
-
-WakeLock::~WakeLock() = default;
-
-class WakeLock::WakeLockImpl {
-   public:
-    WakeLockImpl(const std::string& name) : mWakeLock(nullptr) {
-        static sp<ISystemSuspend> suspendService = ISystemSuspend::getService();
-        mWakeLock = suspendService->acquireWakeLock(WakeLockType::PARTIAL, name);
-    }
-    ~WakeLockImpl() {
-        auto ret = mWakeLock->release();
-        if (!ret.isOk()) {
-            LOG(ERROR) << "IWakeLock::release() call failed: " << ret.description();
-        }
-    }
-
-   private:
-    sp<IWakeLock> mWakeLock;
-};
-
-}  // namespace android::power
