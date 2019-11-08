@@ -133,40 +133,41 @@ void wifi_event_loop(wifi_handle handle);
 void wifi_get_error_info(wifi_error err, const char **msg); // return a pointer to a static string
 
 /* Feature enums */
-#define WIFI_FEATURE_INFRA              0x0001      // Basic infrastructure mode
-#define WIFI_FEATURE_INFRA_5G           0x0002      // Support for 5 GHz Band
-#define WIFI_FEATURE_HOTSPOT            0x0004      // Support for GAS/ANQP
-#define WIFI_FEATURE_P2P                0x0008      // Wifi-Direct
-#define WIFI_FEATURE_SOFT_AP            0x0010      // Soft AP
-#define WIFI_FEATURE_GSCAN              0x0020      // Google-Scan APIs
-#define WIFI_FEATURE_NAN                0x0040      // Neighbor Awareness Networking
-#define WIFI_FEATURE_D2D_RTT            0x0080      // Device-to-device RTT
-#define WIFI_FEATURE_D2AP_RTT           0x0100      // Device-to-AP RTT
-#define WIFI_FEATURE_BATCH_SCAN         0x0200      // Batched Scan (legacy)
-#define WIFI_FEATURE_PNO                0x0400      // Preferred network offload
-#define WIFI_FEATURE_ADDITIONAL_STA     0x0800      // Support for two STAs
-#define WIFI_FEATURE_TDLS               0x1000      // Tunnel directed link setup
-#define WIFI_FEATURE_TDLS_OFFCHANNEL    0x2000      // Support for TDLS off channel
-#define WIFI_FEATURE_EPR                0x4000      // Enhanced power reporting
-#define WIFI_FEATURE_AP_STA             0x8000      // Support for AP STA Concurrency
-#define WIFI_FEATURE_LINK_LAYER_STATS   0x10000     // Link layer stats collection
-#define WIFI_FEATURE_LOGGER             0x20000     // WiFi Logger
-#define WIFI_FEATURE_HAL_EPNO           0x40000     // WiFi PNO enhanced
-#define WIFI_FEATURE_RSSI_MONITOR       0x80000     // RSSI Monitor
-#define WIFI_FEATURE_MKEEP_ALIVE        0x100000    // WiFi mkeep_alive
-#define WIFI_FEATURE_CONFIG_NDO         0x200000    // ND offload configure
-#define WIFI_FEATURE_TX_TRANSMIT_POWER  0x400000    // Capture Tx transmit power levels
-#define WIFI_FEATURE_CONTROL_ROAMING    0x800000    // Enable/Disable firmware roaming
-#define WIFI_FEATURE_IE_WHITELIST       0x1000000   // Support Probe IE white listing
-#define WIFI_FEATURE_SCAN_RAND          0x2000000   // Support MAC & Probe Sequence Number randomization
-#define WIFI_FEATURE_SET_TX_POWER_LIMIT 0x4000000   // Support Tx Power Limit setting
-#define WIFI_FEATURE_USE_BODY_HEAD_SAR  0x8000000   // Support Using Body/Head Proximity for SAR
-#define WIFI_FEATURE_SET_LATENCY_MODE   0x40000000  // Support Latency mode setting
-#define WIFI_FEATURE_P2P_RAND_MAC       0x80000000  // Support Support P2P MAC randomization
+#define WIFI_FEATURE_INFRA              0x0001L      // Basic infrastructure mode
+#define WIFI_FEATURE_INFRA_5G           0x0002L      // Support for 5 GHz Band
+#define WIFI_FEATURE_HOTSPOT            0x0004L      // Support for GAS/ANQP
+#define WIFI_FEATURE_P2P                0x0008L      // Wifi-Direct
+#define WIFI_FEATURE_SOFT_AP            0x0010L      // Soft AP
+#define WIFI_FEATURE_GSCAN              0x0020L      // Google-Scan APIs
+#define WIFI_FEATURE_NAN                0x0040L      // Neighbor Awareness Networking
+#define WIFI_FEATURE_D2D_RTT            0x0080L      // Device-to-device RTT
+#define WIFI_FEATURE_D2AP_RTT           0x0100L      // Device-to-AP RTT
+#define WIFI_FEATURE_BATCH_SCAN         0x0200L      // Batched Scan (legacy)
+#define WIFI_FEATURE_PNO                0x0400L      // Preferred network offload
+#define WIFI_FEATURE_ADDITIONAL_STA     0x0800L      // Support for two STAs
+#define WIFI_FEATURE_TDLS               0x1000L      // Tunnel directed link setup
+#define WIFI_FEATURE_TDLS_OFFCHANNEL    0x2000L      // Support for TDLS off channel
+#define WIFI_FEATURE_EPR                0x4000L      // Enhanced power reporting
+#define WIFI_FEATURE_AP_STA             0x8000L      // Support for AP STA Concurrency
+#define WIFI_FEATURE_LINK_LAYER_STATS   0x10000L     // Link layer stats collection
+#define WIFI_FEATURE_LOGGER             0x20000L     // WiFi Logger
+#define WIFI_FEATURE_HAL_EPNO           0x40000L     // WiFi PNO enhanced
+#define WIFI_FEATURE_RSSI_MONITOR       0x80000L     // RSSI Monitor
+#define WIFI_FEATURE_MKEEP_ALIVE        0x100000L    // WiFi mkeep_alive
+#define WIFI_FEATURE_CONFIG_NDO         0x200000L    // ND offload configure
+#define WIFI_FEATURE_TX_TRANSMIT_POWER  0x400000L    // Capture Tx transmit power levels
+#define WIFI_FEATURE_CONTROL_ROAMING    0x800000L    // Enable/Disable firmware roaming
+#define WIFI_FEATURE_IE_WHITELIST       0x1000000L   // Support Probe IE white listing
+#define WIFI_FEATURE_SCAN_RAND          0x2000000L   // Support MAC & Probe Sequence Number randomization
+#define WIFI_FEATURE_SET_TX_POWER_LIMIT 0x4000000L   // Support Tx Power Limit setting
+#define WIFI_FEATURE_USE_BODY_HEAD_SAR  0x8000000L   // Support Using Body/Head Proximity for SAR
+#define WIFI_FEATURE_SET_LATENCY_MODE   0x40000000L  // Support Latency mode setting
+#define WIFI_FEATURE_P2P_RAND_MAC       0x80000000L  // Support P2P MAC randomization
+#define WIFI_FEATURE_INFRA_6G           0x100000000L // Support for 6 GHz Band
 // Add more features here
 
 
-typedef int feature_set;
+typedef long feature_set;
 
 #define IS_MASK_SET(mask, flags)        (((flags) & (mask)) == (mask))
 
