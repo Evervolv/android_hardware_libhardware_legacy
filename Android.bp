@@ -74,3 +74,14 @@ cc_library_shared {
         "uevent.c",
     ],
 }
+
+cc_test {
+    name: "block_suspend",
+    defaults: ["libpower_defaults"],
+    srcs: ["block_suspend.cpp"],
+    static_libs: ["libpower"],
+    shared_libs: [
+        "android.system.suspend@1.0",
+    ],
+    gtest: false,
+}
