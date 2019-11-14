@@ -563,8 +563,39 @@ typedef struct {
     wifi_error (*wifi_set_subsystem_restart_handler)(wifi_handle handle,
                                                      wifi_subsystem_restart_handler handler);
 
+    /**
+      * Allow vendor HAL to choose interface name when creating
+      * an interface. This can be implemented by chips with their
+      * own interface naming policy.
+      * If not implemented, the default naming will be used.
+      */
+    wifi_error (*wifi_get_supported_iface_name)(wifi_handle handle, u32 iface_type,
+                                                char *name, size_t len);
+
+    /**
+     * Perform early initialization steps that are needed when WIFI
+     * is disabled.
+     * If the function returns failure, it means the vendor HAL is unusable
+     * (for example, if chip hardware is not installed) and no further
+     * functions should be called.
+     */
+    wifi_error (*wifi_early_initialize)(void);
+
+    /**
+     * Get supported feature set which are chip-global, that is
+     * not dependent on any created interface.
+     */
+    wifi_error (*wifi_get_chip_feature_set)(wifi_handle handle, feature_set *set);
+
+    /*
+     * when adding new functions make sure to add stubs in
+     * hal_tool.cpp::init_wifi_stub_hal_func_table
+     */
 } wifi_hal_fn;
+
 wifi_error init_wifi_vendor_hal_func_table(wifi_hal_fn *fn);
+typedef wifi_error (*init_wifi_vendor_hal_func_table_t)(wifi_hal_fn *fn);
+
 #ifdef __cplusplus
 }
 #endif
