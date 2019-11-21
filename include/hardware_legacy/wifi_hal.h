@@ -62,7 +62,9 @@ typedef enum {
 /* WLAN MAC Operates in 2.4 GHz Band */
     WLAN_MAC_2_4_BAND = 1 << 0,
 /* WLAN MAC Operates in 5 GHz Band */
-    WLAN_MAC_5_0_BAND = 1 << 1
+    WLAN_MAC_5_0_BAND = 1 << 1,
+/* WLAN MAC Operates in 6 GHz Band */
+    WLAN_MAC_6_0_BAND = 1 << 2
 } wlan_mac_band;
 
 typedef int wifi_radio;
