@@ -165,7 +165,6 @@ void wifi_get_error_info(wifi_error err, const char **msg); // return a pointer 
 #define WIFI_FEATURE_USE_BODY_HEAD_SAR  (uint64_t)0x8000000   // Support Using Body/Head Proximity for SAR
 #define WIFI_FEATURE_SET_LATENCY_MODE   (uint64_t)0x40000000  // Support Latency mode setting
 #define WIFI_FEATURE_P2P_RAND_MAC       (uint64_t)0x80000000  // Support P2P MAC randomization
-#define WIFI_FEATURE_INFRA_6G           (uint64_t)0x100000000 // Support for 6 GHz Band
 // Add more features here
 
 
