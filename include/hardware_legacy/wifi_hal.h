@@ -110,6 +110,13 @@ typedef enum {
     WIFI_ERROR_BUSY = -10,
 } wifi_error;
 
+typedef enum {
+    WIFI_ACCESS_CATEGORY_BEST_EFFORT = 0,
+    WIFI_ACCESS_CATEGORY_BACKGROUND = 1,
+    WIFI_ACCESS_CATEGORY_VIDEO = 2,
+    WIFI_ACCESS_CATEGORY_VOICE = 3
+} wifi_access_category;
+
 typedef unsigned char byte;
 typedef unsigned char u8;
 typedef signed char s8;
@@ -246,6 +253,10 @@ wifi_error wifi_set_nodfs_flag(wifi_interface_handle handle, u32 nodfs);
 wifi_error wifi_select_tx_power_scenario(wifi_interface_handle handle, wifi_power_scenario scenario);
 wifi_error wifi_reset_tx_power_scenario(wifi_interface_handle handle);
 wifi_error wifi_set_latency_mode(wifi_interface_handle handle, wifi_latency_mode mode);
+wifi_error wifi_map_dscp_access_category(wifi_handle handle,
+                                         uint32_t start, uint32_t end,
+                                         uint32_t access_category);
+wifi_error wifi_reset_dscp_mapping(wifi_handle handle);
 
 /**
  *  Wifi HAL Thermal Mitigation API
@@ -533,6 +544,10 @@ typedef struct {
     wifi_error (*wifi_set_thermal_mitigation_mode)(wifi_handle handle,
                                                    wifi_thermal_mode mode,
                                                    u32 completion_window);
+    wifi_error (*wifi_map_dscp_access_category)(wifi_handle handle,
+                                                u32 start, u32 end,
+                                                u32 access_category);
+    wifi_error (*wifi_reset_dscp_mapping)(wifi_handle handle);
 
     wifi_error (*wifi_virtual_interface_create)(wifi_handle handle, const char* ifname,
                                                 wifi_interface_type iface_type);
