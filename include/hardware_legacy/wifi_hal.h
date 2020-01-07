@@ -55,6 +55,16 @@ typedef enum {
   WIFI_LATENCY_MODE_LOW       = 1,
 } wifi_latency_mode;
 
+/* Wifi Thermal mitigation levels */
+typedef enum {
+  WIFI_MITIGATION_NONE      = 0,
+  WIFI_MITIGATION_LIGHT     = 1,
+  WIFI_MITIGATION_MODERATE  = 2,
+  WIFI_MITIGATION_SEVERE    = 3,
+  WIFI_MITIGATION_CRITICAL  = 4,
+  WIFI_MITIGATION_EMERGENCY = 5,
+} wifi_thermal_mode;
+
 /*
  * enum wlan_mac_band - Band information corresponding to the WLAN MAC.
  */
@@ -228,6 +238,38 @@ wifi_error wifi_set_nodfs_flag(wifi_interface_handle handle, u32 nodfs);
 wifi_error wifi_select_tx_power_scenario(wifi_interface_handle handle, wifi_power_scenario scenario);
 wifi_error wifi_reset_tx_power_scenario(wifi_interface_handle handle);
 wifi_error wifi_set_latency_mode(wifi_interface_handle handle, wifi_latency_mode mode);
+
+/**
+ *  Wifi HAL Thermal Mitigation API
+ *
+ *  wifi_interface_handle : WLAN Interface (e.g. wlan0 or wlan1) that should be
+ *  throttled. If the interface handle is null, then the throttling should be
+ *  applied to all the concurrent active interfaces (e.g. wlan0 + wlan1).
+ *  Note: The implementation and the action mapping to each mode is chip
+ *  specific. Mitigation will be active until Wifi is turned off or
+ *  WIFI_MITIGATION_NONE mode is sent
+ *
+ *  mode: Thermal mitigation mode
+ *  WIFI_MITIGATION_NONE     : Clear all Wifi thermal mitigation actions
+ *  WIFI_MITIGATION_LIGHT    : Light Throttling where UX is not impacted
+ *  WIFI_MITIGATION_MODERATE : Moderate throttling where UX not largely impacted
+ *  WIFI_MITIGATION_SEVERE   : Severe throttling where UX is largely impacted
+ *  WIFI_MITIGATION_CRITICAL : Platform has done everything to reduce power
+ *  WIFI_MITIGATION_EMERGENCY: Key components in platform are shutting down
+ *
+ *  completion_window
+ *  Deadline (in milliseconds) to complete this request, value 0 implies apply
+ *  immediately.
+ *
+ *  Return
+ *  WIFI_ERROR_NOT_SUPPORTED : Chip does not support thermal mitigation
+ *  WIFI_ERROR_BUSY          : Mitigation is supported, but retry later
+ *  WIFI_ERROR_NONE          : Mitigation has been applied successfully
+ */
+wifi_error wifi_set_thermal_mitigation_mode(wifi_interface_handle handle,
+                                            wifi_thermal_mode mode,
+                                            u32 completion_window);
+
 
 typedef struct rx_data_cnt_details_t {
     int rx_unicast_cnt;     /*Total rx unicast packet which woke up host */
@@ -480,6 +522,10 @@ typedef struct {
                         iface, wifi_radio_mode_change_handler eh);
     wifi_error (*wifi_set_latency_mode)(wifi_interface_handle iface,
                                         wifi_latency_mode mode);
+    wifi_error (*wifi_set_thermal_mitigation_mode)(wifi_interface_handle handle,
+                                                   wifi_thermal_mode mode,
+                                                   u32 completion_window);
+
 } wifi_hal_fn;
 wifi_error init_wifi_vendor_hal_func_table(wifi_hal_fn *fn);
 #ifdef __cplusplus
