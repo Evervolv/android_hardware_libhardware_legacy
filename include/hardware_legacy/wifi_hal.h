@@ -55,7 +55,7 @@ typedef enum {
   WIFI_LATENCY_MODE_LOW       = 1,
 } wifi_latency_mode;
 
-/* Wifi Thermal mitigation levels */
+/* Wifi Thermal mitigation modes */
 typedef enum {
   WIFI_MITIGATION_NONE      = 0,
   WIFI_MITIGATION_LIGHT     = 1,
@@ -242,10 +242,9 @@ wifi_error wifi_set_latency_mode(wifi_interface_handle handle, wifi_latency_mode
 /**
  *  Wifi HAL Thermal Mitigation API
  *
- *  wifi_interface_handle : WLAN Interface (e.g. wlan0 or wlan1) that should be
- *  throttled. If the interface handle is null, then the throttling should be
- *  applied to all the concurrent active interfaces (e.g. wlan0 + wlan1).
- *  Note: The implementation and the action mapping to each mode is chip
+ *  wifi_handle : wifi global handle (note: this is not a interface specific
+ *  command). Mitigation is expected to be applied across all active interfaces
+ *  The implementation and the mitigation action mapping to each mode is chip
  *  specific. Mitigation will be active until Wifi is turned off or
  *  WIFI_MITIGATION_NONE mode is sent
  *
@@ -259,14 +258,15 @@ wifi_error wifi_set_latency_mode(wifi_interface_handle handle, wifi_latency_mode
  *
  *  completion_window
  *  Deadline (in milliseconds) to complete this request, value 0 implies apply
- *  immediately.
+ *  immediately. Deadline is basically a relaxed limit and allows vendors to
+ *  apply the mitigation within the window (if it cannot apply immediately)
  *
  *  Return
  *  WIFI_ERROR_NOT_SUPPORTED : Chip does not support thermal mitigation
  *  WIFI_ERROR_BUSY          : Mitigation is supported, but retry later
- *  WIFI_ERROR_NONE          : Mitigation has been applied successfully
+ *  WIFI_ERROR_NONE          : Mitigation request has been accepted
  */
-wifi_error wifi_set_thermal_mitigation_mode(wifi_interface_handle handle,
+wifi_error wifi_set_thermal_mitigation_mode(wifi_handle handle,
                                             wifi_thermal_mode mode,
                                             u32 completion_window);
 
@@ -408,9 +408,9 @@ typedef struct {
             int num, wifi_passpoint_network *networks, wifi_passpoint_event_handler handler);
     wifi_error (* wifi_reset_passpoint_list)(wifi_request_id id, wifi_interface_handle iface);
     wifi_error (*wifi_set_lci) (wifi_request_id id, wifi_interface_handle iface,
-	                             wifi_lci_information *lci);
+                                wifi_lci_information *lci);
     wifi_error (*wifi_set_lcr) (wifi_request_id id, wifi_interface_handle iface,
-	                             wifi_lcr_information *lcr);
+                                wifi_lcr_information *lcr);
     wifi_error (*wifi_start_sending_offloaded_packet)(wifi_request_id id,
                                 wifi_interface_handle iface, u16 ether_type, u8 *ip_packet,
                                 u16 ip_packet_len, u8 *src_mac_addr, u8 *dst_mac_addr,
@@ -522,7 +522,7 @@ typedef struct {
                         iface, wifi_radio_mode_change_handler eh);
     wifi_error (*wifi_set_latency_mode)(wifi_interface_handle iface,
                                         wifi_latency_mode mode);
-    wifi_error (*wifi_set_thermal_mitigation_mode)(wifi_interface_handle handle,
+    wifi_error (*wifi_set_thermal_mitigation_mode)(wifi_handle handle,
                                                    wifi_thermal_mode mode,
                                                    u32 completion_window);
 
