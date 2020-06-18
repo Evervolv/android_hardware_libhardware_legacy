@@ -246,6 +246,10 @@ typedef struct {
         void (*on_rssi_threshold_breached)(wifi_request_id id, u8 *cur_bssid, s8 cur_rssi);
 } wifi_rssi_event_handler;
 
+typedef struct {
+        void (*on_subsystem_restart)(const char* error);
+} wifi_subsystem_restart_handler;
+
 wifi_error wifi_set_iface_event_handler(wifi_request_id id, wifi_interface_handle iface, wifi_event_handler eh);
 wifi_error wifi_reset_iface_event_handler(wifi_request_id id, wifi_interface_handle iface);
 
@@ -257,6 +261,9 @@ wifi_error wifi_map_dscp_access_category(wifi_handle handle,
                                          uint32_t start, uint32_t end,
                                          uint32_t access_category);
 wifi_error wifi_reset_dscp_mapping(wifi_handle handle);
+
+wifi_error wifi_set_subsystem_restart_handler(wifi_handle handle,
+                                              wifi_subsystem_restart_handler handler);
 
 /**
  *  Wifi HAL Thermal Mitigation API
@@ -552,6 +559,9 @@ typedef struct {
     wifi_error (*wifi_virtual_interface_create)(wifi_handle handle, const char* ifname,
                                                 wifi_interface_type iface_type);
     wifi_error (*wifi_virtual_interface_delete)(wifi_handle handle, const char* ifname);
+
+    wifi_error (*wifi_set_subsystem_restart_handler)(wifi_handle handle,
+                                                     wifi_subsystem_restart_handler handler);
 
 } wifi_hal_fn;
 wifi_error init_wifi_vendor_hal_func_table(wifi_hal_fn *fn);
