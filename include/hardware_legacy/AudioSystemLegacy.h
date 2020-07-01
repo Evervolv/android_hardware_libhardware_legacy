@@ -17,6 +17,7 @@
 #ifndef ANDROID_AUDIOSYSTEM_LEGACY_H_
 #define ANDROID_AUDIOSYSTEM_LEGACY_H_
 
+#include <cutils/bitops.h>
 #include <utils/Errors.h>
 #include <media/AudioParameter.h>
 
