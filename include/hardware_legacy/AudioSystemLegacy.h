@@ -345,10 +345,10 @@ public:
     static bool isLinearPCM(uint32_t format) {
         return audio_is_linear_pcm((audio_format_t) format);
     }
-    static bool isOutputChannel(uint32_t channel) {
+    static bool isOutputChannel(audio_channel_mask_t channel) {
         return audio_is_output_channel(channel);
     }
-    static bool isInputChannel(uint32_t channel) {
+    static bool isInputChannel(audio_channel_mask_t channel) {
         return audio_is_input_channel(channel);
     }
 
