@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include <unistd.h>
+
 #include <iostream>
 
 #include <wakelock/wakelock.h>
@@ -33,7 +35,7 @@ int main(int argc, char ** /* argv */) {
     }
 
     android::wakelock::WakeLock wl{gWakeLockName};  // RAII object
-    while (true) {};
+    while (true) { sleep(1000000); };
     std::abort();  // should never reach here
     return 0;
 }
