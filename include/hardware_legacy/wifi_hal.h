@@ -216,6 +216,70 @@ wifi_error wifi_get_ifaces(wifi_handle handle, int *num_ifaces, wifi_interface_h
 wifi_error wifi_get_iface_name(wifi_interface_handle iface, char *name, size_t size);
 wifi_interface_handle wifi_get_iface_handle(wifi_handle handle, char *name);
 
+/* STA + STA support - Supported if WIFI_FEATURE_ADDITIONAL_STA is set */
+
+/**
+ * Invoked to indicate that the provided iface is the primary STA iface when there are more
+ * than 1 STA iface concurrently active.
+ *
+ * Note: If the wifi firmware/chip cannot support multiple instances of any offload
+ * (like roaming, APF, rssi threshold, etc), the firmware should ensure that these
+ * offloads are at least enabled for the primary interface. If the new primary interface is
+ * already connected to a network, the firmware must switch all the offloads on
+ * this new interface without disconnecting.
+ */
+wifi_error wifi_multi_sta_set_primary_connection(wifi_handle handle, wifi_interface_handle iface);
+
+/**
+ * When there are 2 or more simultaneous STA connections, this use case hint indicates what
+ * use-case is being enabled by the framework. This use case hint can be used by the firmware
+ * to modify various firmware configurations like:
+ *  - Allowed BSSIDs the firmware can choose for the initial connection/roaming attempts.
+ *  - Duty cycle to choose for the 2 STA connections if the radio is in MCC mode.
+ *  - Whether roaming, APF and other offloads needs to be enabled or not.
+ *
+ * Note:
+ *  - This will be invoked before an active wifi connection is established on the second interface.
+ *  - This use-case hint is implicitly void when the second STA interface is brought down.
+ */
+typedef enum {
+    /**
+     * Usage:
+     * - This will be sent down for make before break use-case.
+     * - Platform is trying to speculatively connect to a second network and evaluate it without
+     *   disrupting the primary connection.
+     *
+     * Requirements for Firmware:
+     * - Do not reduce the number of tx/rx chains of primary connection.
+     * - If using MCC, should set the MCC duty cycle of the primary connection to be higher than
+     *   the secondary connection (maybe 70/30 split).
+     * - Should pick the best BSSID for the secondary STA (disregard the chip mode) independent of
+     *   the primary STA:
+     *     - Don’t optimize for DBS vs MCC/SCC
+     * - Should not impact the primary connection’s bssid selection:
+     *     - Don’t downgrade chains of the existing primary connection.
+     *     - Don’t optimize for DBS vs MCC/SCC.
+     */
+    WIFI_DUAL_STA_TRANSIENT_PREFER_PRIMARY = 0,
+    /**
+     * Usage:
+     * - This will be sent down for any app requested peer to peer connections.
+     * - In this case, both the connections needs to be allocated equal resources.
+     * - For the peer to peer use case, BSSID for the secondary connection will be chosen by the
+     *   framework.
+     *
+     * Requirements for Firmware:
+     * - Can choose MCC or DBS mode depending on the MCC efficiency and HW capability.
+     * - If using MCC, set the MCC duty cycle of the primary connection to be equal to the secondary
+     *   connection.
+     * - Prefer BSSID candidates which will help provide the best "overall" performance for both the
+     *   connections.
+     */
+    WIFI_DUAL_STA_NON_TRANSIENT_UNBIASED = 1
+} wifi_multi_sta_use_case;
+
+wifi_error wifi_multi_sta_set_use_case(wifi_handle hande, wifi_multi_sta_use_case use_case);
+
 /* Configuration events */
 
 typedef struct {
@@ -587,6 +651,21 @@ typedef struct {
      * not dependent on any created interface.
      */
     wifi_error (*wifi_get_chip_feature_set)(wifi_handle handle, feature_set *set);
+
+    /**
+     * Invoked to indicate that the provided iface is the primary STA iface when there are more
+     * than 1 STA iface concurrently active.
+     */
+    wifi_error (*wifi_multi_sta_set_primary_connection)(wifi_handle handle,
+                                                        wifi_interface_handle iface);
+
+
+    /**
+     * When there are 2 simultaneous STA connections, this use case hint
+     * indicates what STA + STA use-case is being enabled by the framework.
+     */
+    wifi_error (*wifi_multi_sta_set_use_case)(wifi_handle hande,
+                                              wifi_multi_sta_use_case use_case);
 
     /*
      * when adding new functions make sure to add stubs in

@@ -45,15 +45,17 @@ typedef enum {
 #define WIFI_CAPABILITY_COUNTRY      0x00000020     // set is 802.11 Country Element is present
 
 typedef struct {
-   wifi_interface_mode mode;     // interface mode
-   u8 mac_addr[6];               // interface mac address (self)
-   wifi_connection_state state;  // connection state (valid for STA, CLI only)
-   wifi_roam_state roaming;      // roaming state
-   u32 capabilities;             // WIFI_CAPABILITY_XXX (self)
-   u8 ssid[33];                  // null terminated SSID
-   u8 bssid[6];                  // bssid
-   u8 ap_country_str[3];         // country string advertised by AP
-   u8 country_str[3];            // country string for this association
+   wifi_interface_mode mode;          // interface mode
+   u8 mac_addr[6];                    // interface mac address (self)
+   wifi_connection_state state;       // connection state (valid for STA, CLI only)
+   wifi_roam_state roaming;           // roaming state
+   u32 capabilities;                  // WIFI_CAPABILITY_XXX (self)
+   u8 ssid[33];                       // null terminated SSID
+   u8 bssid[6];                       // bssid
+   u8 ap_country_str[3];              // country string advertised by AP
+   u8 country_str[3];                 // country string for this association
+   u8 time_slicing_duty_cycle_percent;// if this iface is being served using time slicing on a radio with one or more ifaces (i.e MCC), then the duty cycle assigned to this iface in %.
+                                      // If not using time slicing (i.e SCC or DBS), set to 100.
 } wifi_interface_link_layer_info;
 
 /* channel information */
