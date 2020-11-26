@@ -278,7 +278,7 @@ typedef enum {
     WIFI_DUAL_STA_NON_TRANSIENT_UNBIASED = 1
 } wifi_multi_sta_use_case;
 
-wifi_error wifi_multi_sta_set_use_case(wifi_handle hande, wifi_multi_sta_use_case use_case);
+wifi_error wifi_multi_sta_set_use_case(wifi_handle handle, wifi_multi_sta_use_case use_case);
 
 /* Configuration events */
 
@@ -408,6 +408,24 @@ typedef struct wlan_driver_wake_reason_cnt_t {
     RX_WAKE_PKT_TYPE_CLASSFICATION rx_wake_pkt_classification_info;
     RX_MULTICAST_WAKE_DATA_CNT rx_multicast_wake_pkt_info;
 } WLAN_DRIVER_WAKE_REASON_CNT;
+
+/* Wi-Fi coex channel avoidance support */
+
+#define WIFI_COEX_NO_POWER_CAP (int32_t)0x7FFFFFF
+
+/**
+ * Representation of a Wi-Fi channel to be avoided for Wi-Fi coex channel avoidance.
+ *
+ * band is represented as an WLAN_MAC* enum value defined in wlan_mac_band.
+ * If power_cap_dbm is WIFI_COEX_NO_POWER_CAP, then no power cap should be applied if the specified
+ * channel is used.
+ */
+typedef struct {
+    wlan_mac_band band;
+    u32 channel;
+    s32 power_cap_dbm;
+} wifi_coex_unsafe_channel;
+
 
 /* include various feature headers */
 
@@ -664,8 +682,16 @@ typedef struct {
      * When there are 2 simultaneous STA connections, this use case hint
      * indicates what STA + STA use-case is being enabled by the framework.
      */
-    wifi_error (*wifi_multi_sta_set_use_case)(wifi_handle hande,
+    wifi_error (*wifi_multi_sta_set_use_case)(wifi_handle handle,
                                               wifi_multi_sta_use_case use_case);
+
+    /**
+     * Invoked to indicate that the following list of wifi_coex_unsafe_channel should be avoided
+     * with the specified restrictions.
+     */
+    wifi_error (*wifi_set_coex_unsafe_channels)(wifi_handle handle, u32 num_channels,
+                                                wifi_coex_unsafe_channel *unsafeChannels,
+                                                u32 restrictions);
 
     /*
      * when adding new functions make sure to add stubs in
