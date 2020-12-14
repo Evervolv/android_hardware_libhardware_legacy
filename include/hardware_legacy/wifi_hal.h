@@ -413,6 +413,12 @@ typedef struct wlan_driver_wake_reason_cnt_t {
 
 #define WIFI_COEX_NO_POWER_CAP (int32_t)0x7FFFFFF
 
+typedef enum {
+    WIFI_AWARE = 1 << 0,
+    SOFTAP = 1 << 1,
+    WIFI_DIRECT = 1 << 2
+} wifi_coex_restriction;
+
 /**
  * Representation of a Wi-Fi channel to be avoided for Wi-Fi coex channel avoidance.
  *
@@ -688,6 +694,9 @@ typedef struct {
     /**
      * Invoked to indicate that the following list of wifi_coex_unsafe_channel should be avoided
      * with the specified restrictions.
+     * @param unsafeChannels list of current |wifi_coex_unsafe_channel| to avoid.
+     * @param restrictions bitmask of |wifi_coex_restriction| indicating wifi interfaces to
+     *         restrict from the current unsafe channels.
      */
     wifi_error (*wifi_set_coex_unsafe_channels)(wifi_handle handle, u32 num_channels,
                                                 wifi_coex_unsafe_channel *unsafeChannels,
