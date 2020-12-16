@@ -65,6 +65,15 @@ typedef enum {
   WIFI_MITIGATION_EMERGENCY = 5,
 } wifi_thermal_mode;
 
+/*
+ * Wifi voice over IP mode
+ * may add new modes later, for example, voice + video over IP mode.
+ */
+typedef enum {
+  WIFI_VOIP_MODE_OFF = 0,
+  WIFI_VOIP_MODE_ON  = 1,
+} wifi_voip_mode;
+
 /* List of interface types supported */
 typedef enum {
   WIFI_INTERFACE_TYPE_STA = 0,
@@ -444,6 +453,7 @@ typedef struct {
 #include "wifi_nan.h"
 #include "wifi_offload.h"
 #include "roam.h"
+#include "wifi_twt.h"
 
 //wifi HAL function pointer table
 typedef struct {
@@ -701,6 +711,78 @@ typedef struct {
     wifi_error (*wifi_set_coex_unsafe_channels)(wifi_handle handle, u32 num_channels,
                                                 wifi_coex_unsafe_channel *unsafeChannels,
                                                 u32 restrictions);
+
+    /**
+     * Invoked to set voip optimization mode for the provided STA iface
+     */
+    wifi_error (*wifi_set_voip_mode)(wifi_interface_handle iface, wifi_voip_mode mode);
+
+    /**@brief twt_register_handler
+     *        Request to register TWT callback before sending any TWT request
+     * @param wifi_interface_handle:
+     * @param TwtCallbackHandler: callback function pointers
+     * @return Synchronous wifi_error
+     */
+    wifi_error (*wifi_twt_register_handler)(wifi_interface_handle iface,
+                                            TwtCallbackHandler handler);
+
+    /**@brief twt_get_capability
+     *        Request TWT capability
+     * @param wifi_interface_handle:
+     * @return Synchronous wifi_error and TwtCapabilitySet
+     */
+    wifi_error (*wifi_twt_get_capability)(wifi_interface_handle iface,
+                                          TwtCapabilitySet* twt_cap_set);
+
+    /**@brief twt_setup_request
+     *        Request to send TWT setup frame
+     * @param wifi_interface_handle:
+     * @param TwtSetupRequest: detailed parameters of setup request
+     * @return Synchronous wifi_error
+     * @return Asynchronous EventTwtSetupResponse CB return TwtSetupResponse
+    */
+    wifi_error (*wifi_twt_setup_request)(wifi_interface_handle iface,
+                                         TwtSetupRequest* msg);
+
+    /**@brief twt_teardown_request
+     *        Request to send TWT teardown frame
+     * @param wifi_interface_handle:
+     * @param TwtTeardownRequest: detailed parameters of teardown request
+     * @return Synchronous wifi_error
+     * @return Asynchronous EventTwtTeardownCompletion CB return TwtTeardownCompletion
+     * TwtTeardownCompletion may also be received due to other events
+     * like CSA, BTCX, TWT scheduler, MultiConnection, peer-initiated teardown, etc.
+     */
+    wifi_error (*wifi_twt_teardown_request)(wifi_interface_handle iface,
+                                            TwtTeardownRequest* msg);
+
+    /**@brief twt_info_frame_request
+     *        Request to send TWT info frame
+     * @param wifi_interface_handle:
+     * @param TwtInfoFrameRequest: detailed parameters in info frame
+     * @return Synchronous wifi_error
+     * @return Asynchronous EventTwtInfoFrameReceived CB return TwtInfoFrameReceived
+     * Driver may also receive Peer-initiated TwtInfoFrame
+     */
+    wifi_error (*wifi_twt_info_frame_request)(wifi_interface_handle iface,
+                                              TwtInfoFrameRequest* msg);
+
+    /**@brief twt_get_stats
+     *        Request to get TWT stats
+     * @param wifi_interface_handle:
+     * @param config_id: configuration ID of TWT request
+     * @return Synchronous wifi_error and TwtStats
+     */
+    wifi_error (*wifi_twt_get_stats)(wifi_interface_handle iface, u8 config_id,
+                                     TwtStats* stats);
+
+    /**@brief twt_clear_stats
+     *        Request to clear TWT stats
+     * @param wifi_interface_handle:
+     * @param config_id: configuration ID of TWT request
+     * @return Synchronous wifi_error
+     */
+    wifi_error (*wifi_twt_clear_stats)(wifi_interface_handle iface, u8 config_id);
 
     /*
      * when adding new functions make sure to add stubs in
