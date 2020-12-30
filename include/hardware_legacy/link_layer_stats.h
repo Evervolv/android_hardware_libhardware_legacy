@@ -160,10 +160,17 @@ typedef enum
 } wifi_peer_type;
 
 /* per peer statistics */
+typedef struct bssload_info {
+    u16 sta_count;    // station count
+    u16 chan_util;    // channel utilization
+    u8 PAD[4];
+} bssload_info_t;
+
 typedef struct {
    wifi_peer_type type;           // peer type (AP, TDLS, GO etc.)
    u8 peer_mac_address[6];        // mac address
    u32 capabilities;              // peer WIFI_CAPABILITY_XXX
+   bssload_info_t bssload;        // STA count and CU
    u32 num_rate;                  // number of rates
    wifi_rate_stat rate_stats[];   // per rate statistics, number of entries  = num_rate
 } wifi_peer_info;
