@@ -784,6 +784,16 @@ typedef struct {
      */
     wifi_error (*wifi_twt_clear_stats)(wifi_interface_handle iface, u8 config_id);
 
+    /**
+     * Invoked to set DTIM configuration when the host is in the suspend mode
+     * @param wifi_interface_handle:
+     * @param multiplier: when STA in the power saving mode, the wake up interval will be set to
+     *              1) multiplier * DTIM period if multiplier > 0.
+     *              2) the device default value if multiplier <=0
+     * Some implementations may apply an additional cap to wake up interval in the case of 1).
+     */
+    wifi_error (*wifi_set_dtim_config)(wifi_interface_handle handle, u32 multiplier);
+
     /*
      * when adding new functions make sure to add stubs in
      * hal_tool.cpp::init_wifi_stub_hal_func_table
