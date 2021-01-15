@@ -25,6 +25,31 @@ extern "C"
 
 #define IFNAMSIZ 16
 
+/* typedefs */
+typedef unsigned char byte;
+typedef unsigned char u8;
+typedef signed char s8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef int32_t s32;
+typedef uint64_t u64;
+typedef int64_t s64;
+typedef int wifi_request_id;
+typedef int wifi_channel;                       // indicates channel frequency in MHz
+typedef int wifi_rssi;
+typedef int wifi_radio;
+typedef byte mac_addr[6];
+typedef byte oui[3];
+typedef int64_t wifi_timestamp;                 // In microseconds (us)
+typedef int64_t wifi_timespan;                  // In picoseconds  (ps)
+typedef uint64_t feature_set;
+
+/* forward declarations */
+struct wifi_info;
+struct wifi_interface_info;
+typedef struct wifi_info *wifi_handle;
+typedef struct wifi_interface_info *wifi_interface_handle;
+
 /* WiFi Common definitions */
 /* channel operating width */
 typedef enum {
@@ -91,11 +116,10 @@ typedef enum {
 /* WLAN MAC Operates in 5 GHz Band */
     WLAN_MAC_5_0_BAND = 1 << 1,
 /* WLAN MAC Operates in 6 GHz Band */
-    WLAN_MAC_6_0_BAND = 1 << 2
+    WLAN_MAC_6_0_BAND = 1 << 2,
+/* WLAN MAC Operates in 60 GHz Band */
+    WLAN_MAC_60_0_BAND = 1 << 3,
 } wlan_mac_band;
-
-typedef int wifi_radio;
-typedef int wifi_channel;
 
 typedef struct {
     wifi_channel_width width;
@@ -103,6 +127,15 @@ typedef struct {
     int center_frequency1;
     int primary_frequency;
 } wifi_channel_spec;
+
+/*
+ * wifi_usable_channel - modes supported on a channel and operating bandwidth
+ */
+typedef struct {
+    wifi_channel freq; // channel frequency in MHz
+    wifi_channel_width width; // channel operating width (20, 40, 80, 160 etc.)
+    u32 iface_mode_mask; // BIT MASK of BIT(WIFI_INTERFACE_*) represented by wifi_interface_mode */
+} wifi_usable_channel;
 
 typedef enum {
     WIFI_SUCCESS = 0,
@@ -126,26 +159,6 @@ typedef enum {
     WIFI_ACCESS_CATEGORY_VOICE = 3
 } wifi_access_category;
 
-typedef unsigned char byte;
-typedef unsigned char u8;
-typedef signed char s8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef int32_t s32;
-typedef uint64_t u64;
-typedef int64_t s64;
-typedef int wifi_request_id;
-typedef int wifi_channel;                       // indicates channel frequency in MHz
-typedef int wifi_rssi;
-typedef byte mac_addr[6];
-typedef byte oui[3];
-typedef int64_t wifi_timestamp;                 // In microseconds (us)
-typedef int64_t wifi_timespan;                  // In picoseconds  (ps)
-
-struct wifi_info;
-struct wifi_interface_info;
-typedef struct wifi_info *wifi_handle;
-typedef struct wifi_interface_info *wifi_interface_handle;
 
 /* Initialize/Cleanup */
 
@@ -201,9 +214,6 @@ void wifi_get_error_info(wifi_error err, const char **msg); // return a pointer 
 #define WIFI_FEATURE_P2P_RAND_MAC       (uint64_t)0x80000000  // Support P2P MAC randomization
 #define WIFI_FEATURE_INFRA_60G          (uint64_t)0x100000000 // Support for 60GHz Band
 // Add more features here
-
-
-typedef uint64_t feature_set;
 
 #define IS_MASK_SET(mask, flags)        (((flags) & (mask)) == (mask))
 
@@ -793,6 +803,38 @@ typedef struct {
      * Some implementations may apply an additional cap to wake up interval in the case of 1).
      */
     wifi_error (*wifi_set_dtim_config)(wifi_interface_handle handle, u32 multiplier);
+
+    /**@brief wifi_get_usable_channels
+     *        Request list of usable channels for the requested bands and modes. Usable
+     *        implies channel is allowed as per regulatory for the current country code
+     *        and not restricted due to other hard limitations (e.g. DFS, Coex) In
+     *        certain modes (e.g. STA+SAP) there could be other hard restrictions
+     *        since MCC operation many not be supported by SAP. This API also allows
+     *        driver to return list of usable channels for each mode uniquely to
+     *        distinguish cases where only a limited set of modes are allowed on
+     *        a given channel e.g. srd channels may be supported for P2P but not
+     *        for SAP or P2P-Client may be allowed on an indoor channel but P2P-GO
+     *        may not be allowed. This API is not interface specific and will be
+     *        used to query capabilities of driver in terms of what modes (STA, SAP,
+     *        P2P_CLI, P2P_GO, NAN, TDLS) can be supported on each of the channels.
+     * @param handle global wifi_handle
+     * @param band_mask BIT MASK of WLAN_MAC* as represented by |wlan_mac_band|
+     * @param iface_mode_mask BIT MASK of BIT(WIFI_INTERFACE_*) represented by
+     *        |wifi_interface_mode|. Bitmask respresents all the modes that the
+     *        caller is interested in (e.g. STA, SAP, CLI, GO, TDLS, NAN).
+     *        Note: Bitmask does not represent concurrency matrix.
+     * @param max_size maximum number of |wifi_usable_channel|
+     * @param size actual number of |wifi_usable_channel|
+     * @param channels list of usable channels represented by |wifi_usable_channel|
+     *        Each |wifi_usable_channel| entry specifies a channel frequency,
+     *        bandwidth, and bitmask of modes (e.g. STA, SAP, CLI, GO, TDLS, NAN)
+     *        allowed on the channel.
+     *        Note: TDLS bit is set only if there is a STA connection. TDLS bit is
+     *        set on non-STA channels only if TDLS off channel is supported.
+     *        Note: Bitmask in |wifi_usable_channel| does not represent concurrency.
+     */
+    wifi_error (*wifi_get_usable_channels)(wifi_handle handle, u32 band_mask, u32 iface_mode_mask,
+                                           u32 max_size, u32* size, wifi_usable_channel* channels);
 
     /*
      * when adding new functions make sure to add stubs in
