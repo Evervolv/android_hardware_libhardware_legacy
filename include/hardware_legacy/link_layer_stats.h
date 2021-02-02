@@ -34,6 +34,7 @@ typedef enum {
     WIFI_INTERFACE_P2P_GO = 4,
     WIFI_INTERFACE_NAN = 5,
     WIFI_INTERFACE_MESH = 6,
+    WIFI_INTERFACE_TDLS = 7,
     WIFI_INTERFACE_UNKNOWN = -1
  } wifi_interface_mode;
 
