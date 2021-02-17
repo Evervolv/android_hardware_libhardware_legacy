@@ -129,13 +129,51 @@ typedef struct {
 } wifi_channel_spec;
 
 /*
- * wifi_usable_channel - modes supported on a channel and operating bandwidth
+ * wifi_usable_channel specifies a channel frequency, bandwidth, and bitmask
+ * of modes allowed on the channel.
  */
 typedef struct {
-    wifi_channel freq; // channel frequency in MHz
-    wifi_channel_width width; // channel operating width (20, 40, 80, 160 etc.)
-    u32 iface_mode_mask; // BIT MASK of BIT(WIFI_INTERFACE_*) represented by wifi_interface_mode */
+    /* Channel frequency in MHz */
+    wifi_channel freq;
+    /* Channel operating width (20, 40, 80, 160 etc.) */
+    wifi_channel_width width;
+    /* BIT MASK of BIT(WIFI_INTERFACE_*) represented by |wifi_interface_mode|
+     * Bitmask does not represent concurrency.
+     * Examples:
+     * - If a channel is usable only for STA, then only the WIFI_INTERFACE_STA
+     *   bit would be set for that channel.
+     * - If 5GHz SAP is not allowed, then none of the 5GHz channels will have
+     *   WIFI_INTERFACE_SOFTAP bit set.
+     * Note: TDLS bit is set only if there is a STA connection. TDLS bit is set
+     * on non-STA channels only if TDLS off channel is supported.
+     */
+    u32 iface_mode_mask;
 } wifi_usable_channel;
+
+/*
+ * wifi_usable_channel_filter
+ */
+typedef enum {
+  /* Filter Wifi channels that should be avoided due to cellular coex
+   * restrictions. Some Wifi channels can have extreme interference
+   * from/to cellular due to short frequency seperation with neighboring
+   * cellular channels or when there is harmonic and intermodulation
+   * interference. Channels which only have some performance degradation
+   * (e.g. power back off is sufficient to deal with coexistence issue)
+   * can be included and should not be filtered out.
+   */
+  WIFI_USABLE_CHANNEL_FILTER_CELLULAR_COEXISTENCE  = 1 << 0,
+  /* Filter channels due to concurrency state.
+   * Examples:
+   * - 5GHz SAP operation may be supported in standalone mode, but if
+   *  there is STA connection on 5GHz DFS channel, none of the 5GHz
+   *  channels are usable for SAP if device does not support DFS SAP mode.
+   * - P2P GO may not be supported on indoor channels in EU during
+   *  standalone mode but if there is a STA connection on indoor channel,
+   *  P2P GO may be supported by some vendors on the same STA channel.
+   */
+  WIFI_USABLE_CHANNEL_FILTER_CONCURRENCY  = 1 << 1,
+} wifi_usable_channel_filter;
 
 typedef enum {
     WIFI_SUCCESS = 0,
@@ -821,20 +859,22 @@ typedef struct {
      * @param band_mask BIT MASK of WLAN_MAC* as represented by |wlan_mac_band|
      * @param iface_mode_mask BIT MASK of BIT(WIFI_INTERFACE_*) represented by
      *        |wifi_interface_mode|. Bitmask respresents all the modes that the
-     *        caller is interested in (e.g. STA, SAP, CLI, GO, TDLS, NAN).
-     *        Note: Bitmask does not represent concurrency matrix.
+     *        caller is interested in (e.g. STA, SAP, WFD-CLI, WFD-GO, TDLS, NAN).
+     *        Note: Bitmask does not represent concurrency matrix. If the caller
+     *        is interested in CLI, GO modes, the iface_mode_mask would be set
+     *        to WIFI_INTERFACE_P2P_CLIENT|WIFI_INTERFACE_P2P_GO.
+     * @param filter_mask BIT MASK of WIFI_USABLE_CHANNEL_FILTER_* represented by
+     *        |wifi_usable_channel_filter|. Indicates if the channel list should
+     *        be filtered based on additional criteria. If filter_mask is not
+     *        specified, driver should return list of usable channels purely
+     *        based on regulatory constraints.
      * @param max_size maximum number of |wifi_usable_channel|
-     * @param size actual number of |wifi_usable_channel|
+     * @param size actual number of |wifi_usable_channel| entries returned by driver
      * @param channels list of usable channels represented by |wifi_usable_channel|
-     *        Each |wifi_usable_channel| entry specifies a channel frequency,
-     *        bandwidth, and bitmask of modes (e.g. STA, SAP, CLI, GO, TDLS, NAN)
-     *        allowed on the channel.
-     *        Note: TDLS bit is set only if there is a STA connection. TDLS bit is
-     *        set on non-STA channels only if TDLS off channel is supported.
-     *        Note: Bitmask in |wifi_usable_channel| does not represent concurrency.
      */
     wifi_error (*wifi_get_usable_channels)(wifi_handle handle, u32 band_mask, u32 iface_mode_mask,
-                                           u32 max_size, u32* size, wifi_usable_channel* channels);
+                                           u32 filter_mask, u32 max_size, u32* size,
+                                           wifi_usable_channel* channels);
 
     /*
      * when adding new functions make sure to add stubs in
