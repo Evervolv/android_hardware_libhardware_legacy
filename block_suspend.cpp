@@ -34,7 +34,11 @@ int main(int argc, char ** /* argv */) {
         return 0;
     }
 
-    android::wakelock::WakeLock wl{gWakeLockName};  // RAII object
+    auto wl = android::wakelock::WakeLock::tryGet(gWakeLockName);  // RAII object
+    if (!wl.has_value()) {
+        return EXIT_FAILURE;
+    }
+
     while (true) { sleep(1000000); };
     std::abort();  // should never reach here
     return 0;
