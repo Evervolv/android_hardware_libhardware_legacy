@@ -121,7 +121,10 @@ class WakeLockTest : public ::testing::Test {
 TEST_F(WakeLockTest, WakeLockDestructor) {
     auto name = std::to_string(rand());
     {
-        android::wakelock::WakeLock wl{name};
+        auto wl = android::wakelock::WakeLock::tryGet(name);
+        if (!wl.has_value()) {
+            return;
+        }
 
         WakeLockInfo info;
         auto success = findWakeLockInfoByName(controlService, name, &info);
