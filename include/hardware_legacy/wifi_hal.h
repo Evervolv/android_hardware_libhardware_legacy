@@ -394,6 +394,7 @@ wifi_error wifi_reset_dscp_mapping(wifi_handle handle);
 wifi_error wifi_set_subsystem_restart_handler(wifi_handle handle,
                                               wifi_subsystem_restart_handler handler);
 
+wifi_error wifi_trigger_subsystem_restart(void);
 /**
  *  Wifi HAL Thermal Mitigation API
  *
@@ -883,6 +884,10 @@ typedef struct {
                                            u32 filter_mask, u32 max_size, u32* size,
                                            wifi_usable_channel* channels);
 
+    /**
+     * Trigger wifi subsystem restart to reload firmware
+     */
+    wifi_error (*wifi_trigger_subsystem_restart)(void);
     /*
      * when adding new functions make sure to add stubs in
      * hal_tool.cpp::init_wifi_stub_hal_func_table
