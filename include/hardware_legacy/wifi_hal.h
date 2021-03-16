@@ -156,7 +156,7 @@ typedef struct {
 typedef enum {
   /* Filter Wifi channels that should be avoided due to cellular coex
    * restrictions. Some Wifi channels can have extreme interference
-   * from/to cellular due to short frequency seperation with neighboring
+   * from/to cellular due to short frequency separation with neighboring
    * cellular channels or when there is harmonic and intermodulation
    * interference. Channels which only have some performance degradation
    * (e.g. power back off is sufficient to deal with coexistence issue)
