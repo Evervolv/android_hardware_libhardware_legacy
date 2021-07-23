@@ -40,7 +40,7 @@ cc_library {
     defaults: ["libpower_defaults"],
     srcs: ["power.cpp"],
     export_include_dirs: ["include"],
-    shared_libs: ["android.system.suspend@1.0"],
+    shared_libs: ["android.system.suspend-V1-ndk_platform"],
     vendor_available: true,
     vndk: {
         enabled: true,
@@ -54,7 +54,7 @@ cc_test {
     static_libs: ["libpower"],
     shared_libs: [
         "android.system.suspend.control.internal-cpp",
-        "android.system.suspend@1.0",
+        "android.system.suspend-V1-ndk_platform",
     ],
     test_suites: ["device-tests"],
     require_root: true,
@@ -69,7 +69,7 @@ cc_library_shared {
     },
 
     shared_libs: [
-        "android.system.suspend@1.0",
+        "android.system.suspend-V1-ndk_platform",
         "libdl",
     ],
 
@@ -98,7 +98,7 @@ cc_test {
     srcs: ["block_suspend.cpp"],
     static_libs: ["libpower"],
     shared_libs: [
-        "android.system.suspend@1.0",
+        "android.system.suspend-V1-ndk_platform",
     ],
     gtest: false,
 }
