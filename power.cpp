@@ -40,7 +40,7 @@ static std::unordered_map<std::string, std::shared_ptr<IWakeLock>> gWakeLockMap;
 
 static const std::shared_ptr<ISystemSuspend> getSystemSuspendServiceOnce() {
     static std::shared_ptr<ISystemSuspend> suspendService =
-        ISystemSuspend::fromBinder(ndk::SpAIBinder(AServiceManager_checkService(
+        ISystemSuspend::fromBinder(ndk::SpAIBinder(AServiceManager_waitForService(
             (ISystemSuspend::descriptor + std::string("/default")).c_str())));
     return suspendService;
 }
@@ -49,7 +49,7 @@ int acquire_wake_lock(int, const char* id) {
     ATRACE_CALL();
     const auto suspendService = getSystemSuspendServiceOnce();
     if (!suspendService) {
-        LOG(ERROR) << "ISystemSuspend::getService() failed.";
+        LOG(ERROR) << "Failed to get SystemSuspend service";
         return -1;
     }
 
@@ -115,6 +115,11 @@ WakeLock::~WakeLock() = default;
 
 WakeLock::WakeLockImpl::WakeLockImpl(const std::string& name) : mWakeLock(nullptr) {
     const auto suspendService = getSystemSuspendServiceOnce();
+    if (!suspendService) {
+        LOG(ERROR) << "Failed to get SystemSuspend service";
+        return;
+    }
+
     std::shared_ptr<IWakeLock> wl = nullptr;
     auto status = suspendService->acquireWakeLock(WakeLockType::PARTIAL, name, &wl);
     // It's possible that during device shutdown SystemSuspend service has already exited.
