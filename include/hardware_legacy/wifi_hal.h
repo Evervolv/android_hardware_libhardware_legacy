@@ -267,6 +267,7 @@ void wifi_get_error_info(wifi_error err, const char **msg); // return a pointer 
 #define WIFI_FEATURE_SCAN_RAND          (uint64_t)0x2000000   // Support MAC & Probe Sequence Number randomization
 #define WIFI_FEATURE_SET_TX_POWER_LIMIT (uint64_t)0x4000000   // Support Tx Power Limit setting
 #define WIFI_FEATURE_USE_BODY_HEAD_SAR  (uint64_t)0x8000000   // Support Using Body/Head Proximity for SAR
+#define WIFI_FEATURE_DYNAMIC_SET_MAC    (uint64_t)0x10000000  // Support changing MAC address without iface reset(down and up)
 #define WIFI_FEATURE_SET_LATENCY_MODE   (uint64_t)0x40000000  // Support Latency mode setting
 #define WIFI_FEATURE_P2P_RAND_MAC       (uint64_t)0x80000000  // Support P2P MAC randomization
 #define WIFI_FEATURE_INFRA_60G          (uint64_t)0x100000000 // Support for 60GHz Band
