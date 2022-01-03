@@ -141,6 +141,13 @@ typedef enum {
     WLAN_MAC_60_0_BAND = 1 << 3,
 } wlan_mac_band;
 
+/* List of chre nan rtt state */
+typedef enum {
+    CHRE_PREEMPTED = 0,
+    CHRE_UNAVAILABLE = 1,
+    CHRE_AVAILABLE = 2,
+} chre_nan_rtt_state;
+
 typedef struct {
     wifi_channel_width width;
     int center_frequency0;
@@ -444,6 +451,10 @@ typedef struct {
 typedef struct {
         void (*on_subsystem_restart)(const char* error);
 } wifi_subsystem_restart_handler;
+
+typedef struct {
+        void (*on_chre_nan_rtt_change)(chre_nan_rtt_state state);
+} wifi_chre_handler;
 
 wifi_error wifi_set_iface_event_handler(wifi_request_id id, wifi_interface_handle iface, wifi_event_handler eh);
 wifi_error wifi_reset_iface_event_handler(wifi_request_id id, wifi_interface_handle iface);
@@ -976,6 +987,35 @@ typedef struct {
     wifi_error (*wifi_get_supported_radio_combinations_matrix)(
         wifi_handle handle, u32 max_size, u32 *size,
         wifi_radio_combination_matrix *radio_combination_matrix);
+
+    /**@brief wifi_nan_rtt_chre_enable_request
+     *        Request to enable CHRE NAN RTT
+     * @param transaction_id: NAN transaction id
+     * @param wifi_interface_handle
+     * @param NanEnableRequest request message
+     * @return Synchronous wifi_error
+     */
+    wifi_error (*wifi_nan_rtt_chre_enable_request)(transaction_id id,
+                                                   wifi_interface_handle iface,
+                                                   NanEnableRequest* msg);
+
+    /**@brief wifi_nan_rtt_chre_disable_request
+     *        Request to disable CHRE NAN RTT
+     * @param transaction_id: NAN transaction id
+     * @param wifi_interface_handle
+     * @return Synchronous wifi_error
+     */
+    wifi_error (*wifi_nan_rtt_chre_disable_request)(transaction_id id, wifi_interface_handle iface);
+
+    /**@brief wifi_chre_register_handler
+     *        register a handler to get the state of CHR
+     * @param wifi_interface_handle
+     * @param wifi_chre_handler: callback function pointer
+     * @return Synchronous wifi_error
+     */
+    wifi_error (*wifi_chre_register_handler)(wifi_interface_handle iface,
+                                             wifi_chre_handler handler);
+
     /*
      * when adding new functions make sure to add stubs in
      * hal_tool.cpp::init_wifi_stub_hal_func_table
