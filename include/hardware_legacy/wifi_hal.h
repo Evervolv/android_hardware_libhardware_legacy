@@ -192,6 +192,14 @@ typedef enum {
    *  P2P GO may be supported by some vendors on the same STA channel.
    */
   WIFI_USABLE_CHANNEL_FILTER_CONCURRENCY  = 1 << 1,
+  /* This Filter queries Wifi channels and bands that are supported for
+   * NAN3.1 Instant communication mode. This filter should only be applied to NAN interface.
+   * If 5G is supported default discovery channel 149/44 is considered,
+   * If 5G is not supported then channel 6 has to be considered.
+   * Based on regulatory domain if channel 149 and 44 are restricted, channel 6 should
+   * be considered for instant communication channel
+   */
+  WIFI_USABLE_CHANNEL_FILTER_NAN_INSTANT_MODE   = 1 << 2,
 } wifi_usable_channel_filter;
 
 typedef enum {
