@@ -225,6 +225,50 @@ typedef enum {
     WIFI_ACCESS_CATEGORY_VOICE = 3
 } wifi_access_category;
 
+/* Antenna configuration */
+typedef enum {
+  WIFI_ANTENNA_UNSPECIFIED = 0,
+  WIFI_ANTENNA_1X1         = 1,
+  WIFI_ANTENNA_2X2         = 2,
+  WIFI_ANTENNA_3X3         = 3,
+  WIFI_ANTENNA_4X4         = 4,
+} wifi_antenna_configuration;
+
+/* Wifi Radio configuration */
+typedef struct {
+    /* Operating band */
+    wlan_mac_band band;
+    /* Antenna configuration */
+    wifi_antenna_configuration antenna_cfg;
+} wifi_radio_configuration;
+
+/* WiFi Radio Combination  */
+typedef struct {
+    u32 num_radio_configurations;
+    wifi_radio_configuration radio_configurations[];
+} wifi_radio_combination;
+
+/* WiFi Radio combinations matrix */
+/* For Example in case of a chip which has two radios, where one radio is
+ * capable of 2.4GHz 2X2 only and another radio which is capable of either
+ * 5GHz or 6GHz 2X2, number of possible radio combinations in this case
+ * are 5 and possible combinations are
+ *                            {{{2G 2X2}}, //Standalone 2G
+ *                            {{5G 2X2}}, //Standalone 5G
+ *                            {{6G 2X2}}, //Standalone 6G
+ *                            {{2G 2X2}, {5G 2X2}}, //2G+5G DBS
+ *                            {{2G 2X2}, {6G 2X2}}} //2G+6G DBS
+ * Note: Since this chip doesn’t support 5G+6G simultaneous operation
+ * as there is only one radio which can support both, So it can only
+ * do MCC 5G+6G. This table should not get populated with possible MCC
+ * configurations. This is only for simultaneous radio configurations
+ * (such as Standalone, multi band simultaneous or single band simultaneous).
+ */
+typedef struct {
+    u32 num_radio_combinations;
+    /* Each row represents possible radio combinations */
+    wifi_radio_combination radio_combinations[];
+} wifi_radio_combination_matrix;
 
 /* Initialize/Cleanup */
 
@@ -919,6 +963,19 @@ typedef struct {
      */
     wifi_error (*wifi_set_indoor_state)(wifi_handle handle, bool isIndoor);
 
+    /**@brief wifi_get_supported_radio_combinations_matrix
+     *        Request all the possible radio combinations this device can offer.
+     * @param handle global wifi_handle
+     * @param max_size maximum size allocated for filling the wifi_radio_combination_matrix
+     * @param wifi_radio_combination_matrix to return all the possible radio
+     *        combinations.
+     * @param size actual size of wifi_radio_combination_matrix returned from
+     *        lower layer
+     *
+     */
+    wifi_error (*wifi_get_supported_radio_combinations_matrix)(
+        wifi_handle handle, u32 max_size, u32 *size,
+        wifi_radio_combination_matrix *radio_combination_matrix);
     /*
      * when adding new functions make sure to add stubs in
      * hal_tool.cpp::init_wifi_stub_hal_func_table
