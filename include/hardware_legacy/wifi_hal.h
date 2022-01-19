@@ -60,6 +60,7 @@ typedef enum {
     WIFI_CHAN_WIDTH_80P80 = 4,
     WIFI_CHAN_WIDTH_5     = 5,
     WIFI_CHAN_WIDTH_10    = 6,
+    WIFI_CHAN_WIDTH_320   = 7,
     WIFI_CHAN_WIDTH_INVALID = -1
 } wifi_channel_width;
 
@@ -154,7 +155,7 @@ typedef struct {
 typedef struct {
     /* Channel frequency in MHz */
     wifi_channel freq;
-    /* Channel operating width (20, 40, 80, 160 etc.) */
+    /* Channel operating width (20, 40, 80, 160, 320 etc.) */
     wifi_channel_width width;
     /* BIT MASK of BIT(WIFI_INTERFACE_*) represented by |wifi_interface_mode|
      * Bitmask does not represent concurrency.
