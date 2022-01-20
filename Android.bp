@@ -49,7 +49,7 @@ cc_library {
        "//apex_available:platform",
        "com.android.uwb",
     ],
-    min_sdk_version: "current", // TODO: Move to 32 once SDK is finalized
+    min_sdk_version: "Tiramisu",
 }
 
 cc_test {
