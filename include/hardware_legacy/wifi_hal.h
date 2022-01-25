@@ -909,6 +909,16 @@ typedef struct {
      * Trigger wifi subsystem restart to reload firmware
      */
     wifi_error (*wifi_trigger_subsystem_restart)(wifi_handle handle);
+
+    /**
+     * Invoked to set that the device is operating in an indoor environment.
+     * @param handle global wifi_handle
+     * @param isIndoor: true if the device is operating in an indoor
+     *        environment, false otherwise.
+     * @return Synchronous wifi_error
+     */
+    wifi_error (*wifi_set_indoor_state)(wifi_handle handle, bool isIndoor);
+
     /*
      * when adding new functions make sure to add stubs in
      * hal_tool.cpp::init_wifi_stub_hal_func_table
