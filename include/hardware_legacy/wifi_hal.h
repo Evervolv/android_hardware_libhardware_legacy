@@ -1016,6 +1016,16 @@ typedef struct {
     wifi_error (*wifi_chre_register_handler)(wifi_interface_handle iface,
                                              wifi_chre_handler handler);
 
+    /**@brief wifi_enable_tx_power_limits
+     *        Enable WiFi Tx power limis
+     * @param wifi_interface_handle
+     * @param isEnable : If enable TX limit or not
+     * @return Synchronous wifi_error
+     */
+    wifi_error (*wifi_enable_tx_power_limits) (wifi_interface_handle iface,
+                                               bool isEnable);
+
+
     /*
      * when adding new functions make sure to add stubs in
      * hal_tool.cpp::init_wifi_stub_hal_func_table
