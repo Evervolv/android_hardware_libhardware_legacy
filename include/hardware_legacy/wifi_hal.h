@@ -125,6 +125,7 @@ typedef enum {
   WIFI_INTERFACE_TYPE_AP  = 1,
   WIFI_INTERFACE_TYPE_P2P = 2,
   WIFI_INTERFACE_TYPE_NAN = 3,
+  WIFI_INTERFACE_TYPE_AP_BRIDGED = 4,
 } wifi_interface_type;
 
 /*
@@ -276,6 +277,105 @@ typedef struct {
     /* Each row represents possible radio combinations */
     wifi_radio_combination radio_combinations[];
 } wifi_radio_combination_matrix;
+
+#define MAX_IFACE_COMBINATIONS 16
+#define MAX_IFACE_LIMITS 8
+
+/* Wifi interface limit
+ * Example:
+ * 1. To allow STA+STA:
+ *     wifi_iface_limit limit1 = {
+ *         .max_limit = 2,
+ *         .iface_mask = BIT(WIFI_INTERFACE_TYPE_STA)
+ *     };
+ * 2. To allow Single P2P/NAN:
+ *     wifi_iface_limit limit2 = {
+ *         .max_limit = 1,
+ *         .iface_mask = BIT(WIFI_INTERFACE_TYPE_P2P)
+ *                       | BIT(WIFI_INTERFACE_TYPE_NAN)
+ *     };
+ */
+typedef struct {
+    /* Max number of interfaces of same type */
+    u32 max_limit;
+    /* BIT mask of interfaces from wifi_interface_type */
+    u32 iface_mask;
+} wifi_iface_limit;
+
+/* Wifi Interface combination
+ * Example:
+ * 1. To allow STA+SAP:
+ *     wifi_iface_limit limits1[] = {
+ *         {1, BIT(WIFI_INTERFACE_TYPE_STA)},
+ *     };
+ *     wifi_iface_limit limits2[] = {
+ *         {1, BIT(WIFI_INTERFACE_TYPE_AP)},
+ *     };
+ *     wifi_iface_combination comb1 = {
+ *         .max_ifaces = 2,
+ *         .num_iface_limits = 2,
+ *         .iface_limits = {limits1, limits2,},
+ *     };
+ *
+ * 2. To allow STA+P2P/NAN:
+ *     wifi_iface_limit limits3[] = {
+ *         {1, BIT(WIFI_INTERFACE_TYPE_STA)},
+ *         {1, BIT(WIFI_INTERFACE_TYPE_P2P)
+               | BIT(WIFI_INTERFACE_TYPE_NAN)},
+ *     };
+ *     wifi_iface_combination comb2 = {
+ *         .max_ifaces = 2,
+ *         .num_iface_limits = 1,
+ *         .iface_limits = {limits3,},
+ *     };
+ *
+ * 3. To allow STA+STA/AP:
+ *     wifi_iface_limit limits4[] = {
+ *         {2, BIT(WIFI_INTERFACE_TYPE_STA)},
+ *     };
+ *     wifi_iface_limit limits5[] = {
+ *         {1, BIT(WIFI_INTERFACE_TYPE_STA)},
+ *         {1, BIT(WIFI_INTERFACE_TYPE_AP)},
+ *     };
+ *     wifi_iface_combination comb3 = {
+ *         .max_ifaces = 2,
+ *         .num_iface_limits = 2,
+ *         .iface_limits = {limits4, limits5,},
+ *     };
+ *
+ * 4. To allow AP_BRIDGED (AP+AP in bridge mode):
+ *     wifi_iface_limit limits6[] = {
+ *         {1, BIT(WIFI_INTERFACE_TYPE_AP_BRIDGED)},
+ *     };
+ *     wifi_iface_combination comb4 = {
+ *         .max_ifaces = 1,
+ *         .num_iface_limits = 1,
+ *         .iface_limits = {limits6,},
+ *     };
+ */
+typedef struct {
+    /* Maximum number of concurrent interfaces allowed in this combination */
+    u32 max_ifaces;
+    /* Total number of interface limits in a combination */
+    u32 num_iface_limits;
+    /* Interface limits */
+    wifi_iface_limit iface_limits[MAX_IFACE_LIMITS];
+} wifi_iface_combination;
+
+/* Wifi Interface concurrency combination matrix
+ * Example:
+ * 1. To allow 2 port concurrency with limts defined in above comments:
+ *     wifi_iface_concurrency_matrix iface_concurrency_matrix = {
+ *         .num_iface_combinations = 4,
+ *         .iface_combinations = {comb1, comb2, comb3, comb4, }
+ *     };
+ */
+typedef struct {
+    /* Total count of possible iface combinations */
+    u32 num_iface_combinations;
+    /* Interface combinations */
+    wifi_iface_combination iface_combinations[MAX_IFACE_COMBINATIONS];
+} wifi_iface_concurrency_matrix;
 
 /* Initialize/Cleanup */
 
@@ -1025,6 +1125,16 @@ typedef struct {
     wifi_error (*wifi_enable_tx_power_limits) (wifi_interface_handle iface,
                                                bool isEnable);
 
+    /**@brief wifi_get_supported_iface_concurrency_matrix
+     *        Request all the possible interface concurrency combinations this
+     *        Wifi Chip can offer.
+     * @param handle global wifi_handle
+     * @param wifi_iface_concurrency_matrix to return all the possible
+     *        interface concurrency combinations.
+     * @return Synchronous wifi_error
+     */
+    wifi_error (*wifi_get_supported_iface_concurrency_matrix)(
+        wifi_handle handle, wifi_iface_concurrency_matrix *matrix);
 
     /*
      * when adding new functions make sure to add stubs in
