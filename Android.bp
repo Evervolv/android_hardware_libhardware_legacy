@@ -45,6 +45,11 @@ cc_library {
     vndk: {
         enabled: true,
     },
+    apex_available: [
+       "//apex_available:platform",
+       "com.android.uwb",
+    ],
+    min_sdk_version: "Tiramisu",
 }
 
 cc_test {
