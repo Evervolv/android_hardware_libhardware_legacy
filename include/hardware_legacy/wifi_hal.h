@@ -578,6 +578,7 @@ typedef struct {
 
 #include "gscan.h"
 #include "link_layer_stats.h"
+#include "wifi_cached_scan_results.h"
 #include "rtt.h"
 #include "tdls.h"
 #include "wifi_logger.h"
@@ -1025,7 +1026,14 @@ typedef struct {
     wifi_error (*wifi_enable_tx_power_limits) (wifi_interface_handle iface,
                                                bool isEnable);
 
-
+    /**@brief wifi_get_cached_scan_results
+     *        Retrieve scan results cached in wifi firmware
+     * @param wifi_interface_handle
+     * @param wifi_cached_scan_result_handler : callback function pointer
+     * @return Synchronous wifi_error
+     */
+    wifi_error (*wifi_get_cached_scan_results)(wifi_interface_handle iface,
+                                               wifi_cached_scan_result_handler handler);
     /*
      * when adding new functions make sure to add stubs in
      * hal_tool.cpp::init_wifi_stub_hal_func_table
