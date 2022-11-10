@@ -24,6 +24,7 @@ extern "C"
 #include <stdint.h>
 
 #define IFNAMSIZ 16
+#define UNSPECIFIED -1 // wifi HAL common definition for unspecified value
 
 /* typedefs */
 typedef unsigned char byte;
