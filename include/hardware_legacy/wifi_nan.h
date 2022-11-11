@@ -65,29 +65,36 @@ typedef u32 NanDataPathId;
 #define NAN_SECURITY_MIN_PASSPHRASE_LEN         8
 #define NAN_SECURITY_MAX_PASSPHRASE_LEN         63
 #define NAN_MAX_CHANNEL_INFO_SUPPORTED          4
-
+#define NAN_IDENTITY_KEY_LEN                    16
+#define NAN_IDENTITY_TAG_LEN                    8
+#define NAN_IDENTITY_NONCE_LEN                  8
+#define NAN_MAX_MATCH_IDENTITY_LEN             1024
 /*
   Definition of various NanResponseType
 */
 typedef enum {
-    NAN_RESPONSE_ENABLED                = 0,
-    NAN_RESPONSE_DISABLED               = 1,
-    NAN_RESPONSE_PUBLISH                = 2,
-    NAN_RESPONSE_PUBLISH_CANCEL         = 3,
-    NAN_RESPONSE_TRANSMIT_FOLLOWUP      = 4,
-    NAN_RESPONSE_SUBSCRIBE              = 5,
-    NAN_RESPONSE_SUBSCRIBE_CANCEL       = 6,
-    NAN_RESPONSE_STATS                  = 7,
-    NAN_RESPONSE_CONFIG                 = 8,
-    NAN_RESPONSE_TCA                    = 9,
-    NAN_RESPONSE_ERROR                  = 10,
-    NAN_RESPONSE_BEACON_SDF_PAYLOAD     = 11,
-    NAN_GET_CAPABILITIES                = 12,
-    NAN_DP_INTERFACE_CREATE             = 13,
-    NAN_DP_INTERFACE_DELETE             = 14,
-    NAN_DP_INITIATOR_RESPONSE           = 15,
-    NAN_DP_RESPONDER_RESPONSE           = 16,
-    NAN_DP_END                          = 17
+    NAN_RESPONSE_ENABLED                 = 0,
+    NAN_RESPONSE_DISABLED                = 1,
+    NAN_RESPONSE_PUBLISH                 = 2,
+    NAN_RESPONSE_PUBLISH_CANCEL          = 3,
+    NAN_RESPONSE_TRANSMIT_FOLLOWUP       = 4,
+    NAN_RESPONSE_SUBSCRIBE               = 5,
+    NAN_RESPONSE_SUBSCRIBE_CANCEL        = 6,
+    NAN_RESPONSE_STATS                   = 7,
+    NAN_RESPONSE_CONFIG                  = 8,
+    NAN_RESPONSE_TCA                     = 9,
+    NAN_RESPONSE_ERROR                   = 10,
+    NAN_RESPONSE_BEACON_SDF_PAYLOAD      = 11,
+    NAN_GET_CAPABILITIES                 = 12,
+    NAN_DP_INTERFACE_CREATE              = 13,
+    NAN_DP_INTERFACE_DELETE              = 14,
+    NAN_DP_INITIATOR_RESPONSE            = 15,
+    NAN_DP_RESPONDER_RESPONSE            = 16,
+    NAN_DP_END                           = 17,
+    NAN_PAIRING_INITIATOR_RESPONSE       = 18,
+    NAN_PAIRING_RESPONDER_RESPONSE       = 19,
+    NAN_BOOTSTRAPPING_INITIATOR_RESPONSE = 20,
+    NAN_BOOTSTRAPPING_RESPONDER_RESPONSE = 21
 } NanResponseType;
 
 /* NAN Publish Types */
@@ -137,6 +144,18 @@ typedef enum {
     NAN_TCA_ID_CLUSTER_SIZE = 0
 } NanTcaType;
 
+/* pairing request type*/
+typedef enum {
+    NAN_PAIRING_SETUP = 0,
+    NAN_PAIRING_VERIFICATION = 1
+} NanPairingRequestType;
+
+/* AKM type */
+typedef enum {
+    SAE = 0,
+    PASN = 1
+} Akm;
+
 /* NAN Channel Info */
 typedef struct {
     u32 channel;
@@ -173,7 +192,11 @@ typedef enum {
     /* If followup message internal queue is full */
     NAN_STATUS_FOLLOWUP_QUEUE_FULL = 11,
     /* Unsupported concurrency session enabled, NAN disabled notified */
-    NAN_STATUS_UNSUPPORTED_CONCURRENCY_NAN_DISABLED = 12
+    NAN_STATUS_UNSUPPORTED_CONCURRENCY_NAN_DISABLED = 12,
+    /*  if the pairing id is invalid */
+    NAN_STATUS_INVALID_PAIRING_ID = 13,
+    /*  if the bootstrapping id is invalid */
+    NAN_STATUS_INVALID_BOOTSTRAPPING_ID = 14
 } NanStatusType;
 
 /* NAN Transmit Types */
@@ -243,6 +266,18 @@ typedef enum {
     NAN_DP_REQUEST_REJECT
 } NanDataPathResponseCode;
 
+/* Pairing request Responder's response */
+typedef enum {
+    NAN_PAIRING_REQUEST_ACCEPT = 0,
+    NAN_PAIRING_REQUEST_REJECT
+} NanPairingResponseCode;
+
+/* Pairing bootstrapping Responder's response */
+typedef enum {
+    NAN_BOOTSTRAPPING_REQUEST_ACCEPT = 0,
+    NAN_BOOTSTRAPPING_REQUEST_REJECT = 1
+} NanBootstrappingResponseCode;
+
 /* NAN DP channel config options */
 typedef enum {
     NAN_DP_CHANNEL_NOT_REQUESTED = 0,
@@ -311,6 +346,8 @@ typedef struct {
 #define NAN_CIPHER_SUITE_SHARED_KEY_256_MASK           0x02
 #define NAN_CIPHER_SUITE_PUBLIC_KEY_2WDH_128_MASK      0x04
 #define NAN_CIPHER_SUITE_PUBLIC_KEY_2WDH_256_MASK      0x08
+#define NAN_CIPHER_SUITE_PUBLIC_KEY_PASN_128_MASK      0x10
+#define NAN_CIPHER_SUITE_PUBLIC_KEY_PASN_256_MASK      0x20
 
 /* NAN ranging indication condition MASKS */
 #define NAN_RANGING_INDICATE_CONTINUOUS_MASK   0x01
@@ -320,6 +357,19 @@ typedef struct {
 /* NAN schedule update reason MASKS */
 #define NAN_SCHEDULE_UPDATE_NSS_MASK   0x01
 #define NAN_SCHEDULE_UPDATE_CHANNEL_MASK  0x02
+
+/* NAN pairing bootstrapping method */
+#define NAN_PAIRING_BOOTSTRAPPING_OPPORTUNISTIC_MASK       0x01
+#define NAN_PAIRING_BOOTSTRAPPING_PIN_CODE_DISPLAY_MASK    0x02
+#define NAN_PAIRING_BOOTSTRAPPING_PASSPHRASE_DISPLAY_MASK  0x04
+#define NAN_PAIRING_BOOTSTRAPPING_QR_DISPLAY_MASK          0x08
+#define NAN_PAIRING_BOOTSTRAPPING_NFC_TAG_MASK             0x10
+#define NAN_PAIRING_BOOTSTRAPPING_PIN_CODE_KEYPAD_MASK     0x20
+#define NAN_PAIRING_BOOTSTRAPPING_PASSPHRASE_KEYPAD_MASK   0x40
+#define NAN_PAIRING_BOOTSTRAPPING_QR_SCAN_MASK             0x80
+#define NAN_PAIRING_BOOTSTRAPPING_NFC_READER_MASK          0x100
+#define NAN_PAIRING_BOOTSTRAPPING_SERVICE_MANAGED_MASK     0x4000
+#define NAN_PAIRING_BOOTSTRAPPING_HANDSHAKE_SHIP_MASK      0x8000
 
 /*
    Structure to set the Service Descriptor Extension
@@ -392,6 +442,9 @@ typedef struct {
     u32 max_subscribe_address;
     u32 ndpe_attr_supported;
     bool is_instant_mode_supported;
+    bool is_6g_supported;
+    bool is_he_supported;
+    bool is_pairing_supported;
 } NanCapabilities;
 
 /*
@@ -1057,6 +1110,32 @@ typedef struct {
 } NanEnableRequest;
 
 /*
+  NAN pairing config.
+*/
+typedef struct {
+
+    /*
+      Enable Nan pairing setup
+    */
+    u32 enable_pairing_setup;
+
+    /*
+      Enable cache NIK/NPK after Nan pairing setup
+    */
+    u32 enable_pairing_cache;
+
+    /*
+      Enable Nan pairing verification with cached NIK/NPK
+    */
+    u32 enable_pairing_verification;
+
+    /*
+      The set of supported bootstrapping methods.
+    */
+    u16 supported_bootstrapping_methods;
+} NanPairingConfig;
+
+/*
   Publish Msg Structure
   Message is used to request the DE to publish the Service Name
   using the parameters passed into the Discovery Window
@@ -1187,6 +1266,17 @@ typedef struct {
     */
     u16 sdea_service_specific_info_len;
     u8 sdea_service_specific_info[NAN_MAX_SDEA_SERVICE_SPECIFIC_INFO_LEN];
+
+    /*
+       The Identity key for pairing, used to generate NIRA
+    */
+    u8 nan_identity_key[NAN_IDENTITY_KEY_LEN];
+
+    /*
+      The config for Nan pairing
+    */
+    NanPairingConfig nan_pairing_config;
+
 } NanPublishRequest;
 
 /*
@@ -1350,6 +1440,15 @@ typedef struct {
     */
     u16 sdea_service_specific_info_len;
     u8 sdea_service_specific_info[NAN_MAX_SDEA_SERVICE_SPECIFIC_INFO_LEN];
+    /*
+       The Identity key for pairing, used to generate NIRA
+    */
+    u8 nan_identity_key[NAN_IDENTITY_KEY_LEN];
+
+    /*
+      The config for Nan pairing
+    */
+    NanPairingConfig nan_pairing_config;
 } NanSubscribeRequest;
 
 /*
@@ -1814,6 +1913,24 @@ typedef struct {
     NanDataPathId ndp_instance_id;
 } NanDataPathRequestResponse;
 
+/* Response returned for Initiators pairing request */
+typedef struct {
+    /*
+      Unique token Id generated on the initiator
+      side used for a pairing session between two NAN devices
+    */
+    u32 paring_instance_id;
+} NanPairingRequestResponse;
+
+/* Response returned for Initiators bootstrapping request */
+typedef struct {
+    /*
+      Unique token Id generated on the initiator
+      side used for a bootstrapping session between two NAN devices
+    */
+    u32 bootstrapping_instance_id;
+} NanBootstrappingRequestResponse;
+
 /*
   NAN Response messages
 */
@@ -1827,6 +1944,8 @@ typedef struct {
         NanStatsResponse stats_response;
         NanDataPathRequestResponse data_request_response;
         NanCapabilities nan_capabilities;
+        NanPairingRequestResponse pairing_request_response;
+        NanBootstrappingRequestResponse bootstrapping_request_response;
     } body;
 } NanResponseMsg;
 
@@ -1866,6 +1985,12 @@ typedef struct {
     NanStatusType reason;
     char nan_reason[NAN_ERROR_STR_LEN]; /* Describe the NAN reason type */
 } NanPublishTerminatedInd;
+
+/* The NIRA used to identify the pairing devices*/
+typedef struct {
+    u8 nonce[NAN_IDENTITY_NONCE_LEN];
+    u8 tag[NAN_IDENTITY_TAG_LEN];
+} NanIdentityResolutionAttribute;
 
 /*
   Match Indication
@@ -1990,6 +2115,16 @@ typedef struct {
     */
     u16 sdea_service_specific_info_len;
     u8 sdea_service_specific_info[NAN_MAX_SDEA_SERVICE_SPECIFIC_INFO_LEN];
+
+    /*
+      The config for Nan pairing set by the peer
+    */
+    NanPairingConfig peer_pairing_config;
+
+    /*
+      The NIRA from peer for Nan pairing verification
+    */
+    NanIdentityResolutionAttribute nira;
 } NanMatchInd;
 
 /*
@@ -2462,6 +2597,252 @@ typedef struct {
     u32 range_measurement_mm;
 } NanRangeReportInd;
 
+/*
+  NAN pairing initator request
+*/
+typedef struct {
+    /*
+       This Id is the Requestor Instance that is passed as
+       part of earlier MatchInd/FollowupInd message.
+    */
+    u32 requestor_instance_id;
+
+    /*
+      Discovery MAC addr of the publisher/peer
+    */
+    u8 peer_disc_mac_addr[NAN_MAC_ADDR_LEN];
+
+    /*
+      Indicate the pairing session is of setup or verification
+    */
+    NanPairingRequestType nan_pairing_request_type;
+
+    /*
+      whether the pairing is opportunistic or password
+    */
+    u8 is_opportunistic;
+
+    /*
+      Security key info used for the pairing setup or verification
+    */
+    NanSecurityKeyInfo key_info;
+    /*
+      AKM used for the pairing verification
+    */
+    Akm akm;
+
+    /*
+      Whether should cache the negotiated NIK/NPK for future verification
+    */
+    u8 enable_pairing_cache;
+
+    /*
+      The Identity key for pairing, can be used for pairing verification
+    */
+    u8 nan_identity_key[NAN_IDENTITY_KEY_LEN];
+
+} NanPairingRequest;
+
+/*
+  Data struct to initiate a pairing response on the responder side for an indication received with a
+  pairing request
+*/
+typedef struct {
+
+    /*
+      Unique token Id generated on the initiator/responder side
+      used for a pairing session between two NAN devices
+    */
+    u32 pairing_instance_id;
+
+    /*
+      Indicate the pairing session is setup or verification
+    */
+    NanPairingRequestType nan_pairing_request_type;
+
+    /* Response Code indicating ACCEPT/REJECT */
+    NanPairingResponseCode rsp_code;
+
+    /*
+      whether the pairing is opportunistic or password
+    */
+    u8 is_opportunistic;
+
+    /*
+      Security key info used for the pairing setup or verification
+    */
+    NanSecurityKeyInfo key_info;
+
+    /*
+      AKM used for the pairing verification
+    */
+    Akm akm;
+
+    /*
+      Whether should cache the negotiated NIK/NPK for future verification
+    */
+    u8 enable_pairing_cache;
+
+    /*
+      The Identity key for pairing, can be used for pairing verification
+    */
+    u8 nan_identity_key[NAN_IDENTITY_KEY_LEN];
+} NanPairingIndicationResponse;
+
+/*
+  Event indication received on the responder side when a Nan pairing session is initiated on the
+  Initiator side
+*/
+typedef struct {
+    /* Publish or Subscribe Id of an earlier Publish/Subscribe */
+    u16 publish_subscribe_id;
+    /*
+      This Id is the Requestor Instance that is passed as
+      part of earlier MatchInd/FollowupInd message.
+    */
+    u32 requestor_instance_id;
+    /*
+      Unique Instance Id corresponding to a service/session.
+      This is similar to the publish_id generated on the
+      publisher side
+    */
+    u32 pairing_instance_id;
+    /* Discovery MAC addr of the peer/initiator */
+    u8 peer_disc_mac_addr[NAN_MAC_ADDR_LEN];
+    /* Indicate the pairing session is setup or verification */
+    NanPairingRequestType nan_pairing_request_type;
+    /* Whether should cache the negotiated NIK/NPK for future verification */
+    u8 enable_pairing_cache;
+    /* The NIRA from peer for Nan pairing verification */
+    NanIdentityResolutionAttribute nira;
+} NanPairingRequestInd;
+
+/*
+  The security info negotiate after the pairing setup for caching
+*/
+typedef struct {
+    /* The inentity key of peer device*/
+    u8 peer_nan_identity_key[NAN_IDENTITY_KEY_LEN];
+    /* The inentity key of local device*/
+    u8 local_nan_identity_key[NAN_IDENTITY_KEY_LEN];
+    /* The PMK excahnge between two devices*/
+    NanSecurityPmk npk;
+    /* The AKM used during the key exchange*/
+    Akm akm;
+} NpkSecurityAssociation;
+
+/*
+ Event indication of pairing confirm is received on both
+ initiator and responder side confirming a pairing session
+*/
+typedef struct {
+    /*
+      Unique token Id generated on the initiator/responder side
+      used for a pairing session between two NAN devices
+    */
+    u32 pairing_instance_id;
+    /* Response code indicating ACCEPT/REJECT */
+    NanPairingResponseCode rsp_code;
+    /*
+      Reason code indicating the cause for REJECT.
+      NAN_STATUS_SUCCESS and NAN_STATUS_PROTOCOL_FAILURE are
+      expected reason codes.
+    */
+    NanStatusType reason_code;
+    /*
+      Indicate the pairing session is setup or verification
+    */
+    NanPairingRequestType nan_pairing_request_type;
+    /* Whether should cache the negotiated NIK/NPK for future verification */
+    u8 enable_pairing_cache;
+    /*
+      The security association info negotiated in the pairing setup, used for future verification
+    */
+    NpkSecurityAssociation npk_security_association;
+} NanPairingConfirmInd;
+
+/*
+  NAN pairing bootstrapping initiator request
+*/
+typedef struct {
+    /*
+       This Id is the Requestor Instance that is passed as
+       part of earlier MatchInd/FollowupInd message.
+    */
+    u32 requestor_instance_id;
+
+    /*
+      Discovery MAC addr of the publisher/peer
+    */
+    u8 peer_disc_mac_addr[NAN_MAC_ADDR_LEN];
+
+    /* Proposed bootstrapping method */
+    u16 request_bootstrapping_method;
+
+} NanBootstrappingRequest;
+/*
+ NAN pairing bootstrapping response from responder to a initate request
+*/
+typedef struct {
+
+    /*
+       This Id is the Requestor Instance that is passed as
+       part of earlier MatchInd/FollowupInd message.
+    */
+    u32 service_instance_id;
+
+
+    /* Response Code indicating ACCEPT/REJECT */
+    NanBootstrappingResponseCode rsp_code;
+
+} NanBootstrappingIndicationResponse;
+
+/*
+  Event indication received on the responder side when a Nan boostrapping session is initiated on
+  the Initiator side
+*/
+typedef struct {
+    /* Publish or Subscribe Id of an earlier Publish/Subscribe */
+    u16 publish_subscribe_id;
+    /*
+      Unique Instance Id corresponding to a service/session.
+      This is similar to the publish_id generated on the
+      publisher side
+    */
+    u32 bootstrapping_instance_id;
+    /*
+      This Id is the Requestor Instance that is passed as
+      part of earlier MatchInd/FollowupInd message.
+    */
+    u32 requestor_instance_id;
+    /* Discovery MAC addr of the peer/initiator */
+    u8 peer_disc_mac_addr[NAN_MAC_ADDR_LEN];
+    /* Proposed bootstrapping method from peer*/
+    u16 request_bootstrapping_method;
+
+} NanBootstrappingRequestInd;
+
+/*
+ Event indication of bootstapping confirm is received on both
+ initiator side confirming a bootstrapping method
+*/
+typedef struct {
+    /*
+      Unique token Id generated on the initiator/responder side
+      used for a bootstrapping session between two NAN devices
+    */
+    u32 bootstrapping_instance_id;
+    /* Response Code indicating ACCEPT/REJECT */
+    NanBootstrappingResponseCode rsp_code;
+    /*
+      Reason code indicating the cause for REJECT.
+      NAN_STATUS_SUCCESS and NAN_STATUS_PROTOCOL_FAILURE are
+      expected reason codes.
+    */
+    NanStatusType reason_code;
+
+} NanBootstrappingConfirmInd;
+
 /* Response and Event Callbacks */
 typedef struct {
     /* NotifyResponse invoked to notify the status of the Request */
@@ -2483,7 +2864,11 @@ typedef struct {
     void (*EventTransmitFollowup) (NanTransmitFollowupInd* event);
     void (*EventRangeRequest) (NanRangeRequestInd* event);
     void (*EventRangeReport) (NanRangeReportInd* event);
-    void (*EventScheduleUpdate)(NanDataPathScheduleUpdateInd* event);
+    void (*EventScheduleUpdate) (NanDataPathScheduleUpdateInd* event);
+    void (*EventPairingRequest) (NanPairingRequestInd* event);
+    void (*EventPairingConfirm) (NanPairingConfirmInd* event);
+    void (*EventBootstrappingRequest) (NanBootstrappingRequestInd* event);
+    void (*EventBootstrappingConfirm) (NanBootstrappingConfirmInd* event);
 } NanCallbackHandler;
 
 /**@brief nan_enable_request
@@ -2789,6 +3174,80 @@ wifi_error nan_data_indication_response(transaction_id id,
 wifi_error nan_data_end(transaction_id id,
                         wifi_interface_handle iface,
                         NanDataPathEndRequest* msg);
+/**@brief nan_pairing_request
+ *        Initiate a NAN Pairingsession.
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanPairingRequest:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INVALID_PARAM
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ *                      NAN_STATUS_PROTOCOL_FAILURE
+ *                      NAN_STATUS_INVALID_REQUESTOR_INSTANCE_ID
+ */
+wifi_error nan_pairing_request(transaction_id id, wifi_interface_handle iface,
+                               NanPairingRequest* msg);
+
+/**@brief nan_pairing_indication_response
+ *        Response to a pairing indication received
+ *        corresponding to a pairing session. An indication
+ *        is received with a pairing request and the responder
+ *        will send a pairing response
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanPairingIndicationResponse:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INVALID_PARAM
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ *                      NAN_STATUS_PROTOCOL_FAILURE
+ *                      NAN_STATUS_INVALID_PAIRING_ID
+ */
+wifi_error nan_pairing_indication_response(transaction_id id, wifi_interface_handle iface,
+                                           NanPairingIndicationResponse* msg);
+
+/**@brief nan_bootstrapping_request
+ *        Initiate a NAN Bootstrapping session.
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanBootstrappingRequest:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INVALID_PARAM
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ *                      NAN_STATUS_PROTOCOL_FAILURE
+ *                      NAN_STATUS_INVALID_REQUESTOR_INSTANCE_ID
+ */
+wifi_error nan_bootstrapping_request(transaction_id id, wifi_interface_handle iface,
+                                     NanBootstrappingRequest* msg);
+
+/**@brief nan_bootstrapping_indication_response
+ *         Response to a pairing indication received
+ *         corresponding to a pairing session. An indication
+ *         is received with a pairing request and the responder
+ *         will send a pairing response
+ *
+ * @param transaction_id:
+ * @param wifi_interface_handle:
+ * @param NanBootstrappingIndicationResponse:
+ * @return Synchronous wifi_error
+ * @return Asynchronous NotifyResponse CB return
+ *                      NAN_STATUS_SUCCESS
+ *                      NAN_STATUS_INVALID_PARAM
+ *                      NAN_STATUS_INTERNAL_FAILURE
+ *                      NAN_STATUS_PROTOCOL_FAILURE
+ *                      NAN_STATUS_INVALID_BOOTSTRAPPING_ID
+ */
+wifi_error nan_bootstrapping_indication_response(transaction_id id, wifi_interface_handle iface,
+                                                 NanBootstrappingIndicationResponse* msg);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
