@@ -277,6 +277,17 @@ typedef struct {
     wifi_radio_combination radio_combinations[];
 } wifi_radio_combination_matrix;
 
+typedef struct {
+    /**
+     * Maximum number of links used in Multi-Link Operation. The maximum
+     * number of links used for MLO can be different from the number of
+     * radios supported by the chip.
+     *
+     * This is a static configuration of the chip.
+     */
+    u32 max_mlo_link_count;
+} wifi_chip_capabilities;
+
 /* Initialize/Cleanup */
 
 wifi_error wifi_initialize(wifi_handle *handle);
@@ -1034,6 +1045,13 @@ typedef struct {
      */
     wifi_error (*wifi_get_cached_scan_results)(wifi_interface_handle iface,
                                                wifi_cached_scan_result_handler handler);
+    /**@brief wifi_get_chip_capabilities
+     *        Retrieve capabilities supported by this chip
+     * @param wifi_handle
+     * @return Synchronous wifi_error and chip capabilites
+     */
+    wifi_error (*wifi_get_chip_capabilities)(wifi_handle handle,
+                                             wifi_chip_capabilities *chip_capabilities);
     /*
      * when adding new functions make sure to add stubs in
      * hal_tool.cpp::init_wifi_stub_hal_func_table
