@@ -223,8 +223,10 @@ typedef struct {
 
 /* Per link statistics */
 typedef struct {
-  u8 link_id;     // Identifier for the link.
-  u32 beacon_rx;  // Beacon received count from connected AP on the link.
+  u8 link_id;       // Identifier for the link.
+  wifi_radio radio; // Radio on which link stats are sampled.
+  u32 frequency;    // Frequency on which link is operating.
+  u32 beacon_rx;    // Beacon received count from connected AP on the link.
   u64 average_tsf_offset;  // Average beacon offset encountered (beacon_TSF -
                            // TBTT). The average_tsf_offset field is used so as
                            // to calculate the typical beacon contention time on
