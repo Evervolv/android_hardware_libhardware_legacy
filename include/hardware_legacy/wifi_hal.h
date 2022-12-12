@@ -286,6 +286,11 @@ typedef struct {
      * This is a static configuration of the chip.
      */
     u32 max_mlo_link_count;
+    /**
+     * Maximum number of concurrent TDLS sessions supported by the chip.
+     *
+     */
+    u32 max_concurrent_tdls_session_count;
 } wifi_chip_capabilities;
 
 /* Initialize/Cleanup */
