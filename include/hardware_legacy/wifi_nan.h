@@ -446,6 +446,7 @@ typedef struct {
     bool is_he_supported;
     bool is_pairing_supported;
     bool is_set_cluster_id_supported;
+    bool is_suspension_supported;
 } NanCapabilities;
 
 /*
