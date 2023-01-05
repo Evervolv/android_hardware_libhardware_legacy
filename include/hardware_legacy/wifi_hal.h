@@ -234,6 +234,12 @@ typedef enum {
     WIFI_ACCESS_CATEGORY_VOICE = 3
 } wifi_access_category;
 
+/* Channel category mask */
+typedef enum {
+    WIFI_INDOOR_CHANNEL = 1 << 0,
+    WIFI_DFS_CHANNEL    = 1 << 1,
+} wifi_channel_category;
+
 /* Antenna configuration */
 typedef enum {
   WIFI_ANTENNA_UNSPECIFIED = 0,
@@ -1181,6 +1187,16 @@ typedef struct {
      */
     wifi_error (*wifi_get_supported_iface_concurrency_matrix)(
         wifi_handle handle, wifi_iface_concurrency_matrix *matrix);
+
+    /**@brief wifi_enable_sta_channel_for_peer_network
+     *        enable or disable the feature of allowing current STA-connected
+     *        channel for WFA GO, SAP and Wi-Fi Aware when the regulatory allows.
+     * @param handle global wifi_handle
+     * @param channelCategoryEnableFlag bitmask of |wifi_channel_category|.
+     * @return Synchronous wifi_error
+     */
+    wifi_error (*wifi_enable_sta_channel_for_peer_network)(
+        wifi_handle handle, u32 channelCategoryEnableFlag);
 
     /*
      * when adding new functions make sure to add stubs in
