@@ -1279,6 +1279,12 @@ typedef struct {
     */
     NanPairingConfig nan_pairing_config;
 
+    /*
+      Specifies whether suspension can be possible in this publish session.
+      The request would fail if enable_suspendability is true but
+      is_suspension_supported is false in NanCapabilities.
+    */
+    bool enable_suspendability;
 } NanPublishRequest;
 
 /*
@@ -1451,6 +1457,13 @@ typedef struct {
       The config for Nan pairing
     */
     NanPairingConfig nan_pairing_config;
+
+    /*
+      Specifies whether suspension can be possible in this subscribe session.
+      The request would fail if enable_suspendability is true but
+      is_suspension_supported is false in NanCapabilities.
+    */
+    bool enable_suspendability;
 } NanSubscribeRequest;
 
 /*
