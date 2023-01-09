@@ -1198,6 +1198,26 @@ typedef struct {
     wifi_error (*wifi_enable_sta_channel_for_peer_network)(
         wifi_handle handle, u32 channelCategoryEnableFlag);
 
+    /**@brief wifi_nan_suspend_request
+     * Request that the specified NAN session be suspended.
+     * @param transaction_id: NAN transaction id
+     * @param wifi_interface_handle
+     * @param NanSuspendRequest request message
+     * @return Synchronous wifi_error
+     */
+    wifi_error (*wifi_nan_suspend_request)(transaction_id id, wifi_interface_handle iface,
+                                                   NanSuspendRequest *msg);
+
+    /**@brief wifi_nan_resume_request
+     * Request that the specified NAN session be resumed.
+     * @param transaction_id: NAN transaction id
+     * @param wifi_interface_handle
+     * @param NanResumeRequest request message
+     * @return Synchronous wifi_error
+     */
+    wifi_error (*wifi_nan_resume_request)(transaction_id id, wifi_interface_handle iface,
+                                                   NanResumeRequest *msg);
+
     /*
      * when adding new functions make sure to add stubs in
      * hal_tool.cpp::init_wifi_stub_hal_func_table

@@ -1509,6 +1509,23 @@ typedef struct {
 } NanStatsRequest;
 
 /*
+  Suspend Request Structure
+  The SuspendRequest message is used to request that the specified session is suspended.
+  The session can be resumed using the NanResumeRequest message.
+*/
+typedef struct {
+    u16 publish_subscribe_id;
+} NanSuspendRequest;
+
+/*
+  Resume Request Structure
+  The ResumeRequest message is used to request that the specified session is resumed.
+*/
+typedef struct {
+    u16 publish_subscribe_id;
+} NanResumeRequest;
+
+/*
   Config Structure
   The NanConfigurationReq message is sent by the Host to the
   Discovery Engine in order to configure the Discovery Engine during runtime.
