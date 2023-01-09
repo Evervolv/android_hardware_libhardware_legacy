@@ -445,6 +445,7 @@ typedef struct {
     bool is_6g_supported;
     bool is_he_supported;
     bool is_pairing_supported;
+    bool is_set_cluster_id_supported;
 } NanCapabilities;
 
 /*
@@ -1656,6 +1657,11 @@ typedef struct {
     */
     u8 config_instant_mode_channel;
     wifi_channel instant_mode_channel;
+    /*
+       Config cluster ID with the cluster ID selected over NFC/OOB method.
+    */
+    u8 config_cluster_id;
+    u16 cluster_id_val; // default value 0x0
 } NanConfigRequest;
 
 /*
