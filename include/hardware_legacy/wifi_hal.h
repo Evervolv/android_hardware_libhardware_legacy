@@ -1219,6 +1219,14 @@ typedef struct {
         transaction_id id, wifi_interface_handle iface,
         NanBootstrappingIndicationResponse *msg);
 
+    /**@brief wifi_set_scan_mode
+     *        Notify driver/firmware current is scan only mode to allow lower
+     *        level to optimize power consumption.
+     * @param enable true if current is scan only mode
+     * @return Synchronous wifi_error
+     */
+    wifi_error (*wifi_set_scan_mode)(const char * ifname, bool enable);
+
     /*
      * when adding new functions make sure to add stubs in
      * wifi_legacy_hal_stubs.cpp::initHalFuncTableWithStubs
