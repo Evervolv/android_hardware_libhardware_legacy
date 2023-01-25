@@ -870,18 +870,6 @@ typedef struct {
     wifi_error (*wifi_nan_data_end)(transaction_id id,
                                     wifi_interface_handle iface,
                                     NanDataPathEndRequest *msg);
-    wifi_error (*wifi_nan_pairing_request)(
-        transaction_id id, wifi_interface_handle iface,
-        NanPairingRequest *msg);
-    wifi_error (*wifi_nan_pairing_indication_response)(
-        transaction_id id, wifi_interface_handle iface,
-        NanPairingIndicationResponse *msg);
-    wifi_error (*wifi_nan_bootstrapping_request)(
-        transaction_id id, wifi_interface_handle iface,
-        NanBootstrappingRequest *msg);
-    wifi_error (*wifi_nan_bootstrapping_indication_response)(
-        transaction_id id, wifi_interface_handle iface,
-        NanBootstrappingIndicationResponse *msg);
     wifi_error (*wifi_select_tx_power_scenario)(wifi_interface_handle iface,
                                                 wifi_power_scenario scenario);
     wifi_error (*wifi_reset_tx_power_scenario)(wifi_interface_handle iface);
@@ -1218,9 +1206,22 @@ typedef struct {
     wifi_error (*wifi_nan_resume_request)(transaction_id id, wifi_interface_handle iface,
                                                    NanResumeRequest *msg);
 
+    wifi_error (*wifi_nan_pairing_request)(
+        transaction_id id, wifi_interface_handle iface,
+        NanPairingRequest *msg);
+    wifi_error (*wifi_nan_pairing_indication_response)(
+    transaction_id id, wifi_interface_handle iface,
+        NanPairingIndicationResponse *msg);
+    wifi_error (*wifi_nan_bootstrapping_request)(
+        transaction_id id, wifi_interface_handle iface,
+        NanBootstrappingRequest *msg);
+    wifi_error (*wifi_nan_bootstrapping_indication_response)(
+        transaction_id id, wifi_interface_handle iface,
+        NanBootstrappingIndicationResponse *msg);
+
     /*
      * when adding new functions make sure to add stubs in
-     * hal_tool.cpp::init_wifi_stub_hal_func_table
+     * wifi_legacy_hal_stubs.cpp::initHalFuncTableWithStubs
      */
 } wifi_hal_fn;
 
