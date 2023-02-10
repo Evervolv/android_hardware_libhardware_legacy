@@ -1228,6 +1228,10 @@ typedef struct {
      */
     wifi_error (*wifi_set_scan_mode)(const char * ifname, bool enable);
 
+    wifi_error (*wifi_nan_pairing_end)(transaction_id id,
+                                    wifi_interface_handle iface,
+                                    NanPairingEndRequest *msg);
+
     /*
      * when adding new functions make sure to add stubs in
      * wifi_legacy_hal_stubs.cpp::initHalFuncTableWithStubs
