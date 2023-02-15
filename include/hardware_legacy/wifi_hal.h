@@ -287,6 +287,10 @@ typedef struct {
 
 typedef struct {
     /**
+     * Maximum number of links supported by the chip for MLO association.
+     */
+    u32 max_mlo_association_link_count;
+    /**
      * Maximum number of Simultaneous Transmit and Receive (STR) links used
      * in Multi-Link Operation. The maximum number of STR links used can be
      * different from the maximum number of radios supported by the chip.
