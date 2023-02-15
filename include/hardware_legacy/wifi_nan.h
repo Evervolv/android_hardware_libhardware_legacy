@@ -95,7 +95,9 @@ typedef enum {
     NAN_PAIRING_RESPONDER_RESPONSE       = 19,
     NAN_BOOTSTRAPPING_INITIATOR_RESPONSE = 20,
     NAN_BOOTSTRAPPING_RESPONDER_RESPONSE = 21,
-    NAN_PAIRING_END                      = 22
+    NAN_PAIRING_END                      = 22,
+    NAN_SUSPEND_REQUEST_RESPONSE         = 23,
+    NAN_RESUME_REQUEST_RESPONSE          = 24
 } NanResponseType;
 
 /* NAN Publish Types */
@@ -197,7 +199,13 @@ typedef enum {
     /*  if the pairing id is invalid */
     NAN_STATUS_INVALID_PAIRING_ID = 13,
     /*  if the bootstrapping id is invalid */
-    NAN_STATUS_INVALID_BOOTSTRAPPING_ID = 14
+    NAN_STATUS_INVALID_BOOTSTRAPPING_ID = 14,
+    /* If same request is received again */
+    NAN_STATUS_REDUNDANT_REQUEST = 15,
+    /* If current request is not supported */
+    NAN_STATUS_NOT_SUPPORTED = 16,
+    /* If no Wifi Aware connection is active */
+    NAN_STATUS_NO_CONNECTION = 17,
 } NanStatusType;
 
 /* NAN Transmit Types */
@@ -2433,6 +2441,9 @@ typedef struct {
        for setting up the Secure Data Path.
     */
     u8 scid[NAN_MAX_SCID_BUF_LEN];
+
+    /* Publish or Subscribe Id of an earlier Publish/Subscribe */
+    u16 publish_subscribe_id;
 } NanDataPathInitiatorRequest;
 
 /*
@@ -2485,6 +2496,9 @@ typedef struct {
        for setting up the Secure Data Path.
     */
     u8 scid[NAN_MAX_SCID_BUF_LEN];
+
+    /* Publish or Subscribe Id of an earlier Publish/Subscribe */
+    u16 publish_subscribe_id;
 } NanDataPathIndicationResponse;
 
 /* NDP termination info */
@@ -2916,6 +2930,14 @@ typedef struct {
 
 } NanBootstrappingConfirmInd;
 
+/*
+ Event indication the device enter or exist the suspension mode
+*/
+typedef struct {
+    /* Indication the device is suspended or not */
+    bool is_suspended;
+} NanSuspensionModeChangeInd;
+
 /* Response and Event Callbacks */
 typedef struct {
     /* NotifyResponse invoked to notify the status of the Request */
@@ -2942,6 +2964,7 @@ typedef struct {
     void (*EventPairingConfirm) (NanPairingConfirmInd* event);
     void (*EventBootstrappingRequest) (NanBootstrappingRequestInd* event);
     void (*EventBootstrappingConfirm) (NanBootstrappingConfirmInd* event);
+    void (*EventSuspensionModeChange) (NanSuspensionModeChangeInd* event);
 } NanCallbackHandler;
 
 /**@brief nan_enable_request
