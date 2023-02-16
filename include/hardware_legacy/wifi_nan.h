@@ -356,8 +356,8 @@ typedef struct {
 #define NAN_CIPHER_SUITE_SHARED_KEY_256_MASK           0x02
 #define NAN_CIPHER_SUITE_PUBLIC_KEY_2WDH_128_MASK      0x04
 #define NAN_CIPHER_SUITE_PUBLIC_KEY_2WDH_256_MASK      0x08
-#define NAN_CIPHER_SUITE_PUBLIC_KEY_PASN_128_MASK      0x10
-#define NAN_CIPHER_SUITE_PUBLIC_KEY_PASN_256_MASK      0x20
+#define NAN_CIPHER_SUITE_PUBLIC_KEY_PASN_128_MASK      0x40
+#define NAN_CIPHER_SUITE_PUBLIC_KEY_PASN_256_MASK      0x80
 
 /* NAN ranging indication condition MASKS */
 #define NAN_RANGING_INDICATE_CONTINUOUS_MASK   0x01
@@ -414,6 +414,25 @@ typedef struct {
       if QOS is required or not.
     */
     NanQosCfgStatus qos_cfg;
+    /*
+      Config to set FSD with Gas bit
+      in the SDEA Control Field.
+     */
+    u8 config_fsd_gas;
+    u8 enable_fsd_gas;
+
+    /*
+      Config to set FSD Required bit
+      in the SDEA Control Field.
+     */
+    u8 config_fsd_req;
+    u8 enable_fsd_req;
+
+    /*
+      Config to set gtk protection bit
+      in the SDEA Control Field.
+     */
+    u8 gtk_protection;
 } NanSdeaCtrlParams;
 
 /*
@@ -1119,6 +1138,20 @@ typedef struct {
     */
     u8 config_instant_mode_channel;
     wifi_channel instant_mode_channel;
+
+    /*
+       Enable/Disable unsync service discovery.
+       0 - Disable
+       1 - Enable
+    */
+    u8 config_unsync_srvdsc;
+    u8 enable_unsync_srvdsc;
+
+    /*
+      Configure regulatory information.
+    */
+    u8 config_reg_info;
+    u8 reg_info_val;
 } NanEnableRequest;
 
 /*
@@ -1295,6 +1328,12 @@ typedef struct {
       is_suspension_supported is false in NanCapabilities.
     */
     bool enable_suspendability;
+
+    /* s3 capabilities */
+    u16 s3_capabilities;
+
+    /* cipher capabilities */
+    u8 cipher_capabilities;
 } NanPublishRequest;
 
 /*
@@ -1474,6 +1513,9 @@ typedef struct {
       is_suspension_supported is false in NanCapabilities.
     */
     bool enable_suspendability;
+
+    /* cipher capabilities */
+    u8 cipher_capabilities;
 } NanSubscribeRequest;
 
 /*
@@ -2499,7 +2541,19 @@ typedef struct {
 
     /* Publish or Subscribe Id of an earlier Publish/Subscribe */
     u16 publish_subscribe_id;
+
+    /*
+      Discovery MAC addr of the publisher/peer
+    */
+    u8 peer_disc_mac_addr[NAN_MAC_ADDR_LEN];
 } NanDataPathIndicationResponse;
+
+/* Sub slot parameters */
+typedef struct {
+    u8 entry_control;
+    u16 time_bitmap_control;
+    u32 time_bitmap;
+} NanS3Params;
 
 /* NDP termination info */
 typedef struct {
