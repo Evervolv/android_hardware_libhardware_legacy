@@ -40,9 +40,9 @@ typedef u16 transaction_id;
 typedef u32 NanDataPathId;
 
 #define NAN_MAC_ADDR_LEN                6
-#define NAN_MAJOR_VERSION               2
+#define NAN_MAJOR_VERSION               4
 #define NAN_MINOR_VERSION               0
-#define NAN_MICRO_VERSION               1
+#define NAN_MICRO_VERSION               0
 #define NAN_MAX_SOCIAL_CHANNELS         3
 
 /* NAN Maximum Lengths */
