@@ -1561,6 +1561,12 @@ typedef struct {
     */
     u16 sdea_service_specific_info_len;
     u8 sdea_service_specific_info[NAN_MAX_SDEA_SERVICE_SPECIFIC_INFO_LEN];
+
+    /*
+       Add shared key descriptor attribute to the Followup request when the
+       flag is set
+    */
+    u8 shared_key_desc_flag;
 } NanTransmitFollowupRequest;
 
 /*
@@ -2906,6 +2912,20 @@ typedef struct {
     /* Proposed bootstrapping method */
     u16 request_bootstrapping_method;
 
+    /*
+       Sequence of values which further specify the published service beyond
+       the service name.
+    */
+    u16 service_specific_info_len;
+    u8 service_specific_info[NAN_MAX_SERVICE_SPECIFIC_INFO_LEN];
+
+    /*
+       Sequence of values indicating the service specific info in SDEA
+       Used for service managed bootstrapping method
+    */
+    u16 sdea_service_specific_info_len;
+    u8 sdea_service_specific_info[NAN_MAX_SDEA_SERVICE_SPECIFIC_INFO_LEN];
+
     /* The length of cookie. */
     u32 cookie_length;
 
@@ -2924,9 +2944,34 @@ typedef struct {
     */
     u32 service_instance_id;
 
+    /* Discovery MAC addr of the peer/initiator */
+    u8 peer_disc_mac_addr[NAN_MAC_ADDR_LEN];
+
+    /*
+       Sequence of values which further specify the published service beyond
+       the service name.
+    */
+    u16 service_specific_info_len;
+    u8 service_specific_info[NAN_MAX_SERVICE_SPECIFIC_INFO_LEN];
+
+    /*
+       Sequence of values indicating the service specific info in SDEA
+       Used for service managed bootstrapping method
+    */
+    u16 sdea_service_specific_info_len;
+    u8 sdea_service_specific_info[NAN_MAX_SDEA_SERVICE_SPECIFIC_INFO_LEN];
 
     /* Response Code indicating ACCEPT/REJECT */
     NanBootstrappingResponseCode rsp_code;
+
+    /* The delay of bootstrapping in seconds */
+    u32 come_back_delay;
+
+    /* The length of cookie. */
+    u32 cookie_length;
+
+    /* Cookie for the follow up response */
+    u8 cookie[];
 
 } NanBootstrappingIndicationResponse;
 
